@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "85963561597",
+    "project_id": "craftplus-9d6b8",
+    "storage_bucket": "craftplus-9d6b8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:85963561597:android:86b36a4571d9b19feeef14",
+        "android_client_info": {
+          "package_name": "com.example.craftplus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "85963561597-loe6v0rt45emd1bqo31sauqc5ko9jmlm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUOMztmmI9Vc2M_JsEOmRYStc2mrqlKsE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "85963561597-loe6v0rt45emd1bqo31sauqc5ko9jmlm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
