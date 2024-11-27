@@ -57,8 +57,8 @@ class SignInActivity : AppCompatActivity() {
                 .setLogo(R.mipmap.ic_launcher)
                 .setAvailableProviders(listOf(
                     AuthUI.IdpConfig.EmailBuilder().build(),
-                    AuthUI.IdpConfig.GoogleBuilder().build(),
-                    AuthUI.IdpConfig.AnonymousBuilder().build()
+                    AuthUI.IdpConfig.GoogleBuilder().build()
+                    //, AuthUI.IdpConfig.AnonymousBuilder().build()
                 ))
                 .build()
 
