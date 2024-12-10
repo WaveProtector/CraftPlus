@@ -1,0 +1,207 @@
+package com.example.craftplus
+
+import android.graphics.Paint.Align
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CreateBuildScreen(navController: NavController, modifier: Modifier = Modifier) {
+
+    val friends = listOf("Herobrine", "Steve", "Slender") // Lista de amigos
+    var selectedFriend by remember { mutableStateOf("") }
+    var buildTitle by remember { mutableStateOf("") } // Armazena o título do Build
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(50.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Título principal
+        Text(
+            text = "Create Build",
+            color = Color.Black,
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
+
+        // Campo de título
+        TitleInput(onTitleChanged = { newTitle ->
+            buildTitle = newTitle // Atualiza o título na variável
+        })
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Texto "Choose a Friend"
+        Text(
+            text = "Choose a Friend",
+            color = Color.Black,
+            fontSize = 24.sp,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        // Campo de pesquisa
+        FriendSelectionDropdown(
+            friends = friends,
+            selectedFriend = selectedFriend,
+            onFriendSelected = { friend ->
+                selectedFriend = friend // Atualiza o amigo selecionado
+            }
+        )
+
+        Spacer(modifier = Modifier.height(250.dp))
+
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        // Botões Cancelar e Iniciar
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(onClick = { /* Cancelar ação */ }) {
+                Text("Cancel")
+            }
+            Button(onClick = { /* Iniciar ação */ }) {
+                Text("Start")
+            }
+        }
+        Spacer(modifier = Modifier.height(100.dp))
+
+        BottomNavBar(navController, 0)
+    }
+}
+
+
+// guardar o titulo
+@Composable
+fun TitleInput(onTitleChanged: (String) -> Unit) {
+
+    var title by remember { mutableStateOf("") } // Estado para armazenar o título
+
+    // Campo de título
+    OutlinedTextField(
+        value = title,
+        onValueChange = {
+            title = it // Atualiza o estado do título
+            onTitleChanged(it) // Envia o título para a função callback
+        },
+        label = { Text("Title of the Build") },
+        placeholder = { Text("Your title build here...") },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FriendSelectionDropdown(
+    friends: List<String>,
+    selectedFriend: String,
+    onFriendSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) } // Controla se o menu está expandido
+    var searchQuery by remember { mutableStateOf(selectedFriend) } // Controla o texto pesquisado
+    var dropdownHeight by remember { mutableStateOf(0) } // Para controlar a altura do menu
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded } // Alterna entre expandido/fechado
+    ) {
+        // Campo de texto para pesquisa
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("Choose a Friend") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor() // Conecta o menu ao campo
+        )
+
+        // Filtro de amigos baseado no texto pesquisado
+        val filteredFriends = friends.filter {
+            it.contains(searchQuery, ignoreCase = true)
+        }
+
+        // Menu suspenso
+        Box(modifier = Modifier.zIndex(1f)) {
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+            ) {
+                filteredFriends.forEach { friend ->
+                    //NAO CONSEGUI POR ISTO IMEDIATAMENTE ABAIXO DO MENU...
+                    DropdownMenuItem(
+                        onClick = {
+                            searchQuery = friend // Define o amigo selecionado
+                            onFriendSelected(friend)
+                            expanded = false // Fecha o menu
+                        },
+                        text = { Text(text = friend) }
+                    )
+                }
+            }
+        }
+
+    }
+}
+
