@@ -33,7 +33,14 @@ fun NavGraph (navController: NavHostController) {
                     .wrapContentSize(Alignment.Center))
         }
 
-        composable(route = Screens.Profile.route) {
+        composable(route = Screens.Roles.route) {
+            ChooseBuildRoleScreen(navController = navController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center))
+        }
+
+        composable(route = Screens.RolesAccept.route) {
             // TODO
         }
 

@@ -73,7 +73,7 @@ fun CreateBuildScreen(navController: NavController, modifier: Modifier = Modifie
         Text(
             text = "Create Build",
             color = Color.Black,
-            fontSize = 30.sp,
+            fontSize = 38.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 24.dp)
         )
@@ -83,13 +83,13 @@ fun CreateBuildScreen(navController: NavController, modifier: Modifier = Modifie
             buildTitle = newTitle // Atualiza o título na variável
         })
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(48.dp))
 
         // Texto "Choose a Friend"
         Text(
             text = "Choose a Friend",
             color = Color.Black,
-            fontSize = 24.sp,
+            fontSize = 28.sp,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
@@ -102,24 +102,33 @@ fun CreateBuildScreen(navController: NavController, modifier: Modifier = Modifie
             }
         )
 
-        Spacer(modifier = Modifier.height(250.dp))
-
+        Spacer(modifier = Modifier.height(100.dp))
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Botões Cancelar e Iniciar
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp) // Adicione padding, se necessário
         ) {
-            Button(onClick = { /* Cancelar ação */ }) {
-                Text("Cancel")
-            }
-            Button(onClick = { /* Iniciar ação */ }) {
-                Text("Start")
+            // Botões Cancelar e Iniciar
+            Row(
+                modifier = Modifier.fillMaxWidth()
+                    .align(Alignment.Center),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(onClick = { navController.navigate(Screens.Home.route) },
+                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp))
+                {
+                    Text("Cancel")
+                }
+                Button(onClick = { navController.navigate(Screens.Roles.route) },
+                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp)) {
+                    Text("Start")
+                }
             }
         }
-        Spacer(modifier = Modifier.height(100.dp))
+        //Spacer(modifier = Modifier.height(250.dp))
     }
 }
 
