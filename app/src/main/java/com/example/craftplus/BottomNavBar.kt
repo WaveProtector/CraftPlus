@@ -22,6 +22,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
+
+// THIS CLASS CAN BE REMOVED NOW
 @Composable
 fun BottomNavBar(navController: NavController, defaultItem: Int, modifier: Modifier = Modifier) {
     // State to track the selected item

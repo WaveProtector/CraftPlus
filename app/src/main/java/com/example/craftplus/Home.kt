@@ -87,8 +87,6 @@ fun Home(navController: NavController, modifier: Modifier = Modifier) {
         // TODO
 
         Spacer(modifier = Modifier.height(150.dp))
-
-        BottomNavBar(navController, 2)
     }
 }
 
