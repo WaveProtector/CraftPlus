@@ -65,18 +65,13 @@ fun CreateBuildScreen(navController: NavController, modifier: Modifier = Modifie
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(50.dp),
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Título principal
-        Text(
-            text = "Create Build",
-            color = Color.Black,
-            fontSize = 38.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
+
+        TopBar(navController, "Create Build")
 
         // Campo de título
         TitleInput(onTitleChanged = { newTitle ->
@@ -117,14 +112,14 @@ fun CreateBuildScreen(navController: NavController, modifier: Modifier = Modifie
                     .align(Alignment.Center),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(onClick = { navController.navigate(Screens.Home.route) },
+                Button(onClick = { navController.navigate(Screens.Roles.route) },
                     modifier = Modifier.weight(1f).padding(horizontal = 8.dp))
                 {
-                    Text("Cancel")
-                }
-                Button(onClick = { navController.navigate(Screens.Roles.route) },
-                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp)) {
                     Text("Start")
+                }
+                Button(onClick = { navController.navigate(Screens.Home.route) },
+                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp)) {
+                    Text("Cancel")
                 }
             }
         }
@@ -146,7 +141,7 @@ fun TitleInput(onTitleChanged: (String) -> Unit) {
             title = it // Atualiza o estado do título
             onTitleChanged(it) // Envia o título para a função callback
         },
-        label = { Text("Title of the Build") },
+        label = { Text("Title") },
         placeholder = { Text("Your title build here...") },
         modifier = Modifier.fillMaxWidth()
     )

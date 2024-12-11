@@ -9,7 +9,8 @@ sealed class Screens(val route: String) {
     object Profile: Screens("profile")
     object Friends: Screens("friends")
     object Roles: Screens("roles")
-    object RolesAccept: Screens("roles_accept")
+    object Camera: Screens("camera")
+    object RolesConfirm: Screens("roles_confirm")
     object BlockTracking: Screens("block_tracking")
     object BuildVideoTracking: Screens("build_video_tracking")
 }

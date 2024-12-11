@@ -40,8 +40,24 @@ fun NavGraph (navController: NavHostController) {
                     .wrapContentSize(Alignment.Center))
         }
 
-        composable(route = Screens.RolesAccept.route) {
-            // TODO
+        composable(route = Screens.RolesConfirm.route) {
+            ConfirmBuildRoleScreen(navController = navController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center))
+        }
+
+        composable(route = Screens.Camera.route) {
+            CameraBuildScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center),
+                onPhotoTaken = { uri ->
+                    //photoViewModel.setPhotoUri(uri)
+                    navController.popBackStack()
+                }
+            )
         }
 
         composable(route = Screens.Friends.route) {

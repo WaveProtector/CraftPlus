@@ -32,6 +32,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -56,105 +58,105 @@ fun ChooseBuildRoleScreen(navController: NavController, modifier: Modifier = Mod
             .padding(16.dp),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Top Section
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "Create Build",
-                color = Color.Black,
-                fontSize = 38.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 24.dp)
-            )
+) {
 
-            Text(
-                // colocar o nome do friend
-                text = "You are starting a build with Herobrine!",
-                color = Color.Black,
-                fontSize = 30.sp
-            )
+        TopBar(navController, "Create Build")
 
-            Spacer(modifier = Modifier.height(48.dp))
+        Text(
+            // colocar o nome do friend
+            text = "You are starting a build with Herobrine!",
+            color = Color.Black,
+            fontSize = 30.sp
+        )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(
-                        painter = painterResource(id = R.drawable.steve_pfp),
-                        contentDescription = "Steve Avatar",
-                        modifier = Modifier
-                            .size(150.dp)
-                            .clip(CircleShape)
-                            .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Steve Minecraft",
-                        style = MaterialTheme.typography.titleMedium,
-                        textAlign = TextAlign.Center
-                    )
+        Spacer(modifier = Modifier.height(48.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(
+                    painter = painterResource(id = R.drawable.steve_pfp),
+                    contentDescription = "Steve Avatar",
+                    modifier = Modifier
+                        .size(150.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Steve Minecraft",
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(
+                    painter = painterResource(id = R.drawable.herobrine),
+                    contentDescription = "Herobrine Avatar",
+                    modifier = Modifier
+                        .size(150.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Herobrine",
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(100.dp))
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp) // Adicione padding, se necessário
+        ) {
+            // Role Section
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "Choose your Role!",
+                    fontSize = 24.sp,
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = { /*onRoleSelected("Build")*/ },
+                        modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+                    ) {
+                        Text(text = "Build")
+                    }
+                    Button(
+                        onClick = { navController.navigate(Screens.Camera.route) /*E TEM DE SER ACIETE PELO AMIGO*/ },
+                        modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+                    ) {
+                        Text(text = "Record")
+                    }
                 }
-
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(
-                        painter = painterResource(id = R.drawable.herobrine),
-                        contentDescription = "Herobrine Avatar",
-                        modifier = Modifier
-                            .size(150.dp)
-                            .clip(CircleShape)
-                            .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Herobrine",
-                        style = MaterialTheme.typography.titleMedium,
-                        textAlign = TextAlign.Center
-                    )
+                Spacer(modifier = Modifier.height(50.dp))
+                Button(
+                    onClick = { navController.navigate(Screens.RolesConfirm.route) }
+                ) {
+                    Text(text = "Provisorio" +
+                            "\n Ecra de Confirmacao")
                 }
             }
 
             Spacer(modifier = Modifier.height(100.dp))
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp) // Adicione padding, se necessário
-            ) {
-                // Role Section
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "Choose your Role!",
-                        fontSize = 24.sp,
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Button(
-                            onClick = { /*onRoleSelected("Build")*/ },
-                            modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
-                        ) {
-                            Text(text = "Build")
-                        }
-                        Button(
-                            onClick = { /*onRoleSelected("Record")*/ },
-                            modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
-                        ) {
-                            Text(text = "Record")
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(100.dp))
-            }
         }
     }
 }
