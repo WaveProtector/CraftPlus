@@ -63,6 +63,9 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
     // Remember PreviewView
     val previewView = remember { PreviewView(context) }
 
+    // Trocar entre mic on e off onClick
+    var micVar by remember { mutableStateOf<Boolean?>(false) }
+
     // Request permission when the composable enters the composition
     LaunchedEffect(Unit) {
         cameraPermissionState.launchPermissionRequest()
@@ -89,6 +92,31 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
             Box(modifier = Modifier.weight(1f)) {
                 AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
 
+                // Mic Button
+                IconButton(
+                    onClick = {
+                        // Toggle micVar between "mic_on" and "mic_off"
+                        micVar = if (micVar == false) {
+                            true // or whatever the off image resource ID is
+                        } else {
+                            false  // or the on image resource ID
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(top = 8.dp, end = 2.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                ) {
+                    Image(
+                        painter = painterResource(id = when (micVar) {
+                            true -> R.drawable.mic_24px // On mic image
+                            else -> R.drawable.mic_off_24px // Off mic image
+                        }),
+                        contentDescription = "Microphone"
+                    )
+                }
+
                 // Capture Button
                 IconButton(
                     onClick = {
@@ -107,7 +135,7 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
                         .align(Alignment.TopEnd)
                         .padding(top = 8.dp, end = 2.dp)
                         .clip(CircleShape)
-                        .background(Color.Black)
+                        .background(MaterialTheme.colorScheme.primary)
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.take_a_picture),
