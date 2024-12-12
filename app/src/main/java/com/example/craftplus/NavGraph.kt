@@ -48,15 +48,11 @@ fun NavGraph (navController: NavHostController) {
         }
 
         composable(route = Screens.Camera.route) {
-            CameraBuildScreen(
+            RecordBuildScreen(
                 navController = navController,
                 modifier = Modifier
                     .fillMaxSize()
-                    .wrapContentSize(Alignment.Center),
-                onPhotoTaken = { uri ->
-                    //photoViewModel.setPhotoUri(uri)
-                    navController.popBackStack()
-                }
+                    .wrapContentSize(Alignment.Center)
             )
         }
 

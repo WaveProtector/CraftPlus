@@ -10,13 +10,25 @@ import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -67,37 +79,41 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
         // Camera Preview
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+                .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Verificar se nao esta a cortar a camera
-            TopBar(navController, "Recording")
+            //TopBar(navController, "Recording")
 
             Box(modifier = Modifier.weight(1f)) {
                 AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
-            }
 
-            // Capture Button
-            Button(
-                onClick = {
-                    if (imageCapture != null) {
-                        capturePhoto(
-                            context = context,
-                            imageCapture = imageCapture!!,
-                            executor = cameraExecutor,
-                            onPhotoTaken = onPhotoTaken
-                        )
-                    } else {
-                        Toast.makeText(context, "Camera not ready yet", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(16.dp)
-            ) {
-                Text(text = "Capture Photo")
+                // Capture Button
+                IconButton(
+                    onClick = {
+                        if (imageCapture != null) {
+                            capturePhoto(
+                                context = context,
+                                imageCapture = imageCapture!!,
+                                executor = cameraExecutor,
+                                onPhotoTaken = onPhotoTaken
+                            )
+                        } else {
+                            Toast.makeText(context, "Camera not ready yet", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 8.dp, end = 2.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.take_a_picture),
+                        contentDescription = "Capture a Photo"
+                    )
+                }
             }
         }
 
