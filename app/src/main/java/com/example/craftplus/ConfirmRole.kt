@@ -134,13 +134,13 @@ fun ConfirmBuildRoleScreen(navController: NavController, modifier: Modifier = Mo
                 ) {
                     Button(
                         onClick = { },
-                        modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+                        modifier = Modifier.wrapContentSize().padding(horizontal = 8.dp)
                     ) {
                         Text(text = "Yes")
                     }
                     Button(
                         onClick = { navController.navigate(Screens.Home.route) },
-                        modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+                        modifier = Modifier.wrapContentSize().padding(horizontal = 8.dp)
                     ) {
                         Text(text = "No")
                     }

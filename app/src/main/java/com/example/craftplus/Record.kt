@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,7 +58,7 @@ fun RecordBuildScreen(navController: NavController, modifier: Modifier = Modifie
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
+        //verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -70,68 +71,22 @@ fun RecordBuildScreen(navController: NavController, modifier: Modifier = Modifie
             fontSize = 30.sp
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
-
-//        Row(
-//            modifier = Modifier.fillMaxWidth(),
-//            horizontalArrangement = Arrangement.SpaceEvenly,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                Image(
-//                    painter = painterResource(id = R.drawable.steve_pfp),
-//                    contentDescription = "Steve Avatar",
-//                    modifier = Modifier
-//                        .size(150.dp)
-//                        .clip(CircleShape)
-//                        .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-//                )
-//                Spacer(modifier = Modifier.height(8.dp))
-//                Text(
-//                    text = "Steve Minecraft",
-//                    style = MaterialTheme.typography.titleMedium,
-//                    textAlign = TextAlign.Center
-//                )
-//            }
-//
-//            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                Image(
-//                    painter = painterResource(id = R.drawable.herobrine),
-//                    contentDescription = "Herobrine Avatar",
-//                    modifier = Modifier
-//                        .size(150.dp)
-//                        .clip(CircleShape)
-//                        .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-//                )
-//                Spacer(modifier = Modifier.height(8.dp))
-//                Text(
-//                    text = "Herobrine",
-//                    style = MaterialTheme.typography.titleMedium,
-//                    textAlign = TextAlign.Center
-//                )
-//            }
-//        }
-//
-//        Spacer(modifier = Modifier.height(100.dp))
-//
-//        Spacer(modifier = Modifier.weight(1f))
+        //Spacer(modifier = Modifier.height(10.dp))
 
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp) // Adicione padding, se necessário
+                .padding(20.dp) // Adicione padding, se necessário
         ) {
             // Role Section
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(LocalConfiguration.current.screenHeightDp.dp * 0.6f)// Adicione padding, se necessário
+                        .background(Color.Black)
+
                 ) {
                     CameraBuildScreen(
                         navController = navController,
                         modifier = Modifier
-                            .fillMaxSize()
                             .wrapContentSize(Alignment.Center),
                         onPhotoTaken = { uri ->
                             //photoViewModel.setPhotoUri(uri)
@@ -140,27 +95,27 @@ fun RecordBuildScreen(navController: NavController, modifier: Modifier = Modifie
                     )
                 }
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(30.dp))
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Button(
                         onClick = { navController.navigate(Screens.Home.route) },
-                        modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+                        modifier = Modifier.wrapContentSize().padding(horizontal = 8.dp)
                     ) {
                         Text(text = "Cancel")
                     }
                     Button(
                         onClick = { /*navController.navigate(Screens.Camera.route) *//*E TEM DE SER ACIETE PELO AMIGO*/ },
-                        modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+                        modifier = Modifier.wrapContentSize().padding(horizontal = 8.dp)
                     ) {
                         Text(text = "Finish")
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(100.dp))
+            //Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }

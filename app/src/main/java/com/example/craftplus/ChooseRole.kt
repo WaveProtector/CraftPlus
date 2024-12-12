@@ -136,13 +136,13 @@ fun ChooseBuildRoleScreen(navController: NavController, modifier: Modifier = Mod
                 ) {
                     Button(
                         onClick = { /*onRoleSelected("Build")*/ },
-                        modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+                        modifier = Modifier.wrapContentSize().padding(horizontal = 8.dp)
                     ) {
                         Text(text = "Build")
                     }
                     Button(
                         onClick = { navController.navigate(Screens.Camera.route) /*E TEM DE SER ACIETE PELO AMIGO*/ },
-                        modifier = Modifier.weight(1f).padding(horizontal = 8.dp)
+                        modifier = Modifier.wrapContentSize().padding(horizontal = 8.dp)
                     ) {
                         Text(text = "Record")
                     }

@@ -113,12 +113,12 @@ fun CreateBuildScreen(navController: NavController, modifier: Modifier = Modifie
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Button(onClick = { navController.navigate(Screens.Roles.route) },
-                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp))
+                    modifier = Modifier.wrapContentSize().padding(horizontal = 8.dp))
                 {
                     Text("Start")
                 }
                 Button(onClick = { navController.navigate(Screens.Home.route) },
-                    modifier = Modifier.weight(1f).padding(horizontal = 8.dp)) {
+                    modifier = Modifier.wrapContentSize().padding(horizontal = 8.dp)) {
                     Text("Cancel")
                 }
             }

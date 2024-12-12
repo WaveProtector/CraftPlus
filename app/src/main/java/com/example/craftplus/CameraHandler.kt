@@ -81,16 +81,11 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
     if (cameraPermissionState.status.isGranted) {
         // Camera Preview
         Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Verificar se nao esta a cortar a camera
-            //TopBar(navController, "Recording")
 
-            Box(modifier = Modifier.weight(1f)) {
-                AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
+            Box(modifier) {
+                AndroidView(factory = { previewView }, modifier.height(460.dp))
 
                 // Mic Button
                 IconButton(
@@ -102,9 +97,9 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
                             false  // or the on image resource ID
                         }
                     },
-                    modifier = Modifier
+                    modifier
                         .align(Alignment.TopStart)
-                        .padding(top = 8.dp, end = 2.dp)
+                        .padding(8.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primary)
                 ) {
@@ -133,7 +128,7 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
                     },
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(top = 8.dp, end = 2.dp)
+                        .padding(8.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primary)
                 ) {
