@@ -66,7 +66,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Google Sign In SDK
-    implementation("com.google.android.gms:play-services-auth:21.3.0")
+    // NAO ALTERAR SENAO CRASHA A AUTENTICACAO
+    implementation("com.google.android.gms:play-services-auth:20.5.0")
+
 
     // Firebase SDK
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
@@ -94,4 +96,16 @@ dependencies {
 
     // Other dependencies...
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.7.3")
+
+    //retrofit and BD connection
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
 }

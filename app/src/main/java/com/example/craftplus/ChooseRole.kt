@@ -56,6 +56,8 @@ fun ChooseBuildRoleScreen(navController: NavController, modifier: Modifier = Mod
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
+
+
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
 ) {
@@ -147,13 +149,13 @@ fun ChooseBuildRoleScreen(navController: NavController, modifier: Modifier = Mod
                         Text(text = "Record")
                     }
                 }
-                Spacer(modifier = Modifier.height(50.dp))
-                Button(
-                    onClick = { navController.navigate(Screens.RolesConfirm.route) }
-                ) {
-                    Text(text = "Provisorio" +
-                            "\n Ecra de Confirmacao")
-                }
+//                Spacer(modifier = Modifier.height(50.dp))
+//                Button(
+//                    onClick = { navController.navigate(Screens.RolesConfirm.route) }
+//                ) {
+//                    Text(text = "Provisorio" +
+//                            "\n Ecra de Confirmacao")
+//                }
             }
 
             Spacer(modifier = Modifier.height(100.dp))

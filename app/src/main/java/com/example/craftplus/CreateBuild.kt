@@ -1,6 +1,7 @@
 package com.example.craftplus
 
 import android.graphics.Paint.Align
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -41,27 +42,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.example.craftplus.network.BuildObject
+import com.example.craftplus.network.BuildViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateBuildScreen(navController: NavController, modifier: Modifier = Modifier) {
+fun CreateBuildScreen(buildViewModel: BuildViewModel, navController: NavController, modifier: Modifier = Modifier) {
 
+    //IR BUSCAR A BD
     val friends = listOf("Herobrine", "Steve", "Slender") // Lista de amigos
     var selectedFriend by remember { mutableStateOf("") }
     var buildTitle by remember { mutableStateOf("") } // Armazena o título do Build
+    val build = BuildObject(
+        id = "mockId123",
+        title = buildTitle,
+        starter = "John Doe",
+        friend = "Jane Doe",
+        builder = "Builder Bot",
+        recorder = "Camera Bot",
+        blocks = 150, // Exemplo de número de blocos
+        video = "https://example.com/mock_video.mp4", // URL de um vídeo fictício
+        steps = 5 // Exemplo de número de passos
+    )
 
     Column(
         modifier = Modifier
@@ -74,12 +80,14 @@ fun CreateBuildScreen(navController: NavController, modifier: Modifier = Modifie
         TopBar(navController, "Create Build")
 
         // Campo de título
+        //GUARDAR NA BD
         TitleInput(onTitleChanged = { newTitle ->
             buildTitle = newTitle // Atualiza o título na variável
         })
 
         Spacer(modifier = Modifier.height(48.dp))
 
+        //GUARDAR NA BD
         // Texto "Choose a Friend"
         Text(
             text = "Choose a Friend",
@@ -112,7 +120,9 @@ fun CreateBuildScreen(navController: NavController, modifier: Modifier = Modifie
                     .align(Alignment.Center),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(onClick = { navController.navigate(Screens.Roles.route) },
+                Button(onClick = {
+                    Log.d("SAVE", build.toString())
+                    buildViewModel.saveCurrentBuild(build); navController.navigate(Screens.Roles.route) },
                     modifier = Modifier.wrapContentSize().padding(horizontal = 8.dp))
                 {
                     Text("Start")

@@ -1,0 +1,111 @@
+package com.example.craftplus
+
+import android.util.Log
+import com.example.craftplus.network.BuildObject
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
+import kotlinx.coroutines.tasks.await
+import java.io.IOException
+
+class FirestoreRepository(private val firestore: FirebaseFirestore) {
+
+    /**
+     * Saves a BuildObject to Firestore.
+     *
+     * @param build The BuildObject to be saved.
+     * @throws IOException If there is an issue with the Firestore operation.
+     */
+    suspend fun saveBuildObject(build: BuildObject) {
+        try {
+            // Referência à coleção "Builds"
+            Log.d("LINK", firestore.toString())
+            val collectionRef = firestore.collection("Builds")
+            Log.d("REF", collectionRef.toString())
+            // Adicionar um timestamp ao objeto BuildObject antes de salvar
+            //val buildWithTimestamp = build.copy(id = build.id, title = build.title, starter= build.starter)
+
+            collectionRef.add(build).await()
+        } catch (e: Exception) {
+            throw IOException("Failed to save BuildObject to Firestore", e)
+        }
+    }
+
+    /**
+     * Loads the last BuildObject saved to Firestore.
+     *
+     * @return The last saved BuildObject or null if none exists.
+     * @throws IOException If there is an issue with the Firestore operation.
+     */
+    suspend fun loadLastBuildObject(): BuildObject? {
+        return try {
+            val querySnapshot = firestore.collection("build_objects")
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .limit(1)
+                .get()
+                .await()
+
+            val document = querySnapshot.documents.firstOrNull()
+            document?.toObject(BuildObject::class.java)
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error loading BuildObject: ${e.message}")
+            null
+        }
+    }
+
+    /**
+     * Gets the current number of builds for a user.
+     *
+     * @param userId The unique identifier of the user.
+     * @return The current build count.
+     * @throws IOException If there is an issue with the Firestore operation.
+     */
+    suspend fun getBuildCount(userId: String): Int {
+        try {
+            val documentRef = firestore.collection("user_stats").document(userId)
+            val documentSnapshot = documentRef.get().await()
+
+            return if (documentSnapshot.exists()) {
+                documentSnapshot.getLong("buildCount")?.toInt() ?: 0
+            } else {
+                // Initialize build count to 0 if the document doesn't exist
+                documentRef.set(mapOf("buildCount" to 0)).await()
+                0
+            }
+        } catch (e: Exception) {
+            throw IOException("Failed to get build count from Firestore", e)
+        }
+    }
+
+    /**
+     * Increments the build count for a user.
+     *
+     * @param userId The unique identifier of the user.
+     * @throws IOException If there is an issue with the Firestore operation.
+     */
+    suspend fun incrementBuildCount(userId: String) {
+        try {
+            val documentRef = firestore.collection("user_stats").document(userId)
+            documentRef.set(
+                mapOf("buildCount" to FieldValue.increment(1)),
+                SetOptions.merge()
+            ).await()
+        } catch (e: Exception) {
+            throw IOException("Failed to increment build count in Firestore", e)
+        }
+    }
+
+    fun getBuildObjects(): List<BuildObject>? {
+        TODO("Not yet implemented")
+    }
+}
+
+// Singleton Instance
+object RepositoryProvider {
+    private val firestore = FirebaseFirestore.getInstance()
+    val firestoreRepository: FirestoreRepository by lazy {
+        FirestoreRepository(firestore)
+    }
+}
