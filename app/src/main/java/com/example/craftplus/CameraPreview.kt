@@ -2,11 +2,12 @@ package com.example.craftplus
 
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,5 @@ fun CameraPreview(
                 controller.bindToLifecycle(lifecycleOwner)
             }
         },
-        modifier = modifier.fillMaxSize()
-    )
+        modifier = modifier.height(560.dp).size(220.dp))
 }

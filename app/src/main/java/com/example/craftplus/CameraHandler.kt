@@ -4,63 +4,43 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
-import android.content.pm.PackageManager
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.*
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.video.FileOutputOptions
 import androidx.camera.video.MediaStoreOutputOptions
 import androidx.camera.video.Recording
-import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
-import androidx.camera.view.PreviewView
-import com.example.craftplus.MainViewModel
 import androidx.camera.view.video.AudioConfig
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import kotlinx.coroutines.guava.await
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 private var recording: Recording? = null
@@ -92,15 +72,6 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
 
     val audioPermissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
 
-    // ImageCapture use case
-    var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
-
-    // Camera Provider
-    val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
-
-    // Remember PreviewView
-    val previewView = remember { PreviewView(context) }
-
     cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
     // Trocar entre mic on e off onClick
@@ -129,9 +100,9 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Box(modifier) {
+            Box(modifier = Modifier.size(450.dp)) {
 
-                CameraPreview(controller = controller)
+                CameraPreview(controller = controller, modifier.align(Alignment.Center))
 
                 // Mic Button
                 IconButton(
