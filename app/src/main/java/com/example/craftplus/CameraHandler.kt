@@ -1,15 +1,30 @@
 package com.example.craftplus
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
+import android.content.pm.PackageManager
+import android.media.MediaScannerConnection
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.video.FileOutputOptions
+import androidx.camera.video.MediaStoreOutputOptions
+import androidx.camera.video.Recording
+import androidx.camera.video.VideoCapture
+import androidx.camera.video.VideoRecordEvent
+import androidx.camera.view.CameraController
+import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
+import com.example.craftplus.MainViewModel
+import androidx.camera.view.video.AudioConfig
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,16 +46,27 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.guava.await
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import androidx.lifecycle.viewmodel.compose.viewModel
+
+private var recording: Recording? = null
+
+// Executor
+var cameraExecutor = Executors.newSingleThreadExecutor()
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -48,8 +74,23 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    val scope = rememberCoroutineScope()
+
+    val controller = remember {
+        LifecycleCameraController(context).apply {
+            setEnabledUseCases(
+                CameraController.IMAGE_CAPTURE or
+                        CameraController.VIDEO_CAPTURE
+            )
+        }
+    }
+
+    controller.cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
     // Permission State
-    val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
+    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
+
+    val audioPermissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
 
     // ImageCapture use case
     var imageCapture by remember { mutableStateOf<ImageCapture?>(null) }
@@ -57,18 +98,22 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
     // Camera Provider
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
 
-    // Executor
-    val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
-
     // Remember PreviewView
     val previewView = remember { PreviewView(context) }
+
+    cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
     // Trocar entre mic on e off onClick
     var micVar by remember { mutableStateOf<Boolean?>(false) }
 
+    val viewModel = viewModel<MainViewModel>()
+
+    val bitmaps by viewModel.bitmaps.collectAsState()
+
     // Request permission when the composable enters the composition
     LaunchedEffect(Unit) {
         cameraPermissionState.launchPermissionRequest()
+        audioPermissionState.launchPermissionRequest()
     }
 
     // Dispose of the cameraExecutor when the composable is disposed
@@ -78,14 +123,15 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
         }
     }
 
-    if (cameraPermissionState.status.isGranted) {
+    if (cameraPermissionState.status.isGranted && audioPermissionState.status.isGranted) {
         // Camera Preview
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Box(modifier) {
-                AndroidView(factory = { previewView }, modifier.height(460.dp))
+
+                CameraPreview(controller = controller)
 
                 // Mic Button
                 IconButton(
@@ -112,19 +158,37 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
                     )
                 }
 
+                IconButton(
+                    onClick = {
+                        controller.cameraSelector =
+                            if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+                                CameraSelector.DEFAULT_FRONT_CAMERA
+                            } else CameraSelector.DEFAULT_BACK_CAMERA
+                    },
+                    modifier
+                        .align(Alignment.BottomStart)
+                        .padding(8.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.flip_camera_android_24px),
+                        contentDescription = "Swap cameras"
+                    )
+                }
+
                 // Capture Button
                 IconButton(
                     onClick = {
-                        if (imageCapture != null) {
                             capturePhoto(
+                                controller = controller,
                                 context = context,
-                                imageCapture = imageCapture!!,
-                                executor = cameraExecutor,
-                                onPhotoTaken = onPhotoTaken
+                                onPhotoSaved = { uri ->
+                                    // Handle the saved URI, e.g., store it, show it, etc.
+                                    Log.d("Camera", "Photo saved at: $uri")
+                                },
+                                onPhotoTaken = viewModel::onTakePhoto
                             )
-                        } else {
-                            Toast.makeText(context, "Camera not ready yet", Toast.LENGTH_SHORT).show()
-                        }
                     },
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -137,66 +201,41 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
                         contentDescription = "Capture a Photo"
                     )
                 }
-            }
-        }
 
-        // Setup Camera in LaunchedEffect
-        LaunchedEffect(cameraProviderFuture) {
-            try {
-                val cameraProvider = cameraProviderFuture.await()
-                val preview = Preview.Builder().build().also {
-                    it.setSurfaceProvider(previewView.surfaceProvider)
+
+                IconButton(
+                    onClick = {
+                        recordVideo(controller, context)
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(8.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.video_camera_back_24px),
+                        contentDescription = "Start recording"
+                    )
                 }
-
-                imageCapture = ImageCapture.Builder()
-                    .setTargetRotation(previewView.display.rotation)
-                    .build()
-
-                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    lifecycleOwner,
-                    cameraSelector,
-                    preview,
-                    imageCapture
-                )
-            } catch (exc: Exception) {
-                Log.e("CameraX", "Camera initialization failed", exc)
-                Toast.makeText(context, "Failed to initialize camera", Toast.LENGTH_SHORT).show()
-            }
-        }
-    } else {
-        // Permission not granted
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Camera permission is required to use this feature.")
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
-                Text("Grant Permission")
             }
         }
     }
 }
 
 // Helper function to capture photo using MediaStore
-private fun capturePhoto(
-    context: Context,
-    imageCapture: ImageCapture,
-    executor: ExecutorService,
-    onPhotoTaken: (Uri) -> Unit
+private fun capturePhoto(controller: LifecycleCameraController,
+                         context: Context,
+                         onPhotoSaved: (Uri) -> Unit,
+                         onPhotoTaken: (Bitmap) -> Unit
+
 ) {
     val name = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(System.currentTimeMillis())
     val contentValues = ContentValues().apply {
         put(MediaStore.MediaColumns.DISPLAY_NAME, "JPEG_$name.jpg")
         put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/CraftPlus")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/Craft+_Pictures")
         }
     }
 
@@ -208,28 +247,96 @@ private fun capturePhoto(
         )
         .build()
 
-    imageCapture.takePicture(
-        outputOptions,
-        executor,
+
+    controller.takePicture(
+        outputOptions,  // Pass the outputOptions directly here
+        ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                val savedUri = outputFileResults.savedUri
-                Log.d("CameraX", "Photo saved in: $savedUri")
-                savedUri?.let {
-                    // Switch to the main thread to update UI
-                    Handler(context.mainLooper).post {
-                        onPhotoTaken(it)
-                        Toast.makeText(context, "Photo saved successfully", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                // Get the URI of the saved file
+                val savedUri: Uri = outputFileResults.savedUri ?: Uri.EMPTY
+                onPhotoSaved(savedUri)
+                Toast.makeText(
+                    context,
+                    "Picture saved: ${savedUri.path}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
 
             override fun onError(exception: ImageCaptureException) {
-                Log.e("CameraX", "Photo capture failed: ${exception.message}", exception)
-                Handler(context.mainLooper).post {
-                    Toast.makeText(context, "Photo capture failed", Toast.LENGTH_SHORT).show()
+                Log.e("Camera", "Couldn't save photo: ", exception)
+                Toast.makeText(
+                    context,
+                    "Couldn't save picture",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        })
+}
+
+@SuppressLint("MissingPermission")
+fun recordVideo(controller: LifecycleCameraController, context: Context) {
+
+    if(recording != null) {
+        recording?.stop()
+        recording = null
+        return
+    }
+
+    val name = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(System.currentTimeMillis())
+
+    val contentValues = ContentValues().apply {
+        put(MediaStore.Video.Media.DISPLAY_NAME, "$name.mp4")
+        put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
+        put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/Craft+_Builds")
+    }
+
+    val outputOptions = MediaStoreOutputOptions.Builder(
+        context.contentResolver,
+        MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+    ).setContentValues(contentValues).build()
+
+
+    //Toast must be called on the main thread not on the camera one
+    val mainExecutor = ContextCompat.getMainExecutor(context)
+
+    recording = controller.startRecording(
+        outputOptions,
+        //FileOutputOptions.Builder(outputFile).build(),
+        AudioConfig.create(true),
+        mainExecutor
+    ) { event ->
+        when (event) {
+            is VideoRecordEvent.Finalize -> {
+                mainExecutor.execute {
+                    if (event.hasError()) {
+                        //Log.d("Finaliza", event.cause.toString())
+                        recording?.close()
+                        recording = null
+
+                        Toast.makeText(
+                            context,
+                            "Video capture failed",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        val uri = event.outputResults.outputUri
+                        Toast.makeText(
+                            context,
+                            "Video saved: ${uri.path}",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        //notify media store
+                        MediaScannerConnection.scanFile(
+                            context,
+                            arrayOf(uri.toString()),
+                            arrayOf("video/mp4"),
+                            null
+                        )
+                    }
                 }
             }
         }
-    )
+    }
 }
