@@ -107,7 +107,7 @@ fun RecordBuildScreen(navController: NavController, modifier: Modifier = Modifie
                         Text(text = "Cancel")
                     }
                     Button(
-                        onClick = { /*navController.navigate(Screens.Camera.route) *//*E TEM DE SER ACIETE PELO AMIGO*/ },
+                        onClick = { navController.navigate(Screens.Media.route) },
                         modifier = Modifier.wrapContentSize().padding(horizontal = 8.dp)
                     ) {
                         Text(text = "Finish")

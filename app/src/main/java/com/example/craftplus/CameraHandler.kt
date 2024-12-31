@@ -72,12 +72,18 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
 
     val audioPermissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
 
+    val readAudioPermissionState = rememberPermissionState(Manifest.permission.READ_MEDIA_AUDIO)
+
+    val readVideoPermissionState = rememberPermissionState(Manifest.permission.READ_MEDIA_VIDEO)
+
+    val readImagePermissionState = rememberPermissionState(Manifest.permission.READ_MEDIA_IMAGES)
+
     cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
     // Trocar entre mic on e off onClick
     var micVar by remember { mutableStateOf<Boolean?>(false) }
 
-    val viewModel = viewModel<MainViewModel>()
+    val viewModel = viewModel<PhotoViewModel>()
 
     val bitmaps by viewModel.bitmaps.collectAsState()
 
@@ -85,6 +91,9 @@ fun CameraBuildScreen(navController: NavController, modifier: Modifier = Modifie
     LaunchedEffect(Unit) {
         cameraPermissionState.launchPermissionRequest()
         audioPermissionState.launchPermissionRequest()
+        readAudioPermissionState.launchPermissionRequest()
+        readImagePermissionState.launchPermissionRequest()
+        readVideoPermissionState.launchPermissionRequest()
     }
 
     // Dispose of the cameraExecutor when the composable is disposed
@@ -257,9 +266,9 @@ fun recordVideo(controller: LifecycleCameraController, context: Context) {
     val name = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(System.currentTimeMillis())
 
     val contentValues = ContentValues().apply {
-        put(MediaStore.Video.Media.DISPLAY_NAME, "$name.mp4")
+        put(MediaStore.Video.Media.DISPLAY_NAME, "VID_$name.mp4")
         put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
-        put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/Craft+_Builds")
+        put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/Craft+_Builds_Videos")
     }
 
     val outputOptions = MediaStoreOutputOptions.Builder(
@@ -281,7 +290,6 @@ fun recordVideo(controller: LifecycleCameraController, context: Context) {
             is VideoRecordEvent.Finalize -> {
                 mainExecutor.execute {
                     if (event.hasError()) {
-                        //Log.d("Finaliza", event.cause.toString())
                         recording?.close()
                         recording = null
 
@@ -304,6 +312,27 @@ fun recordVideo(controller: LifecycleCameraController, context: Context) {
                             arrayOf(uri.toString()),
                             arrayOf("video/mp4"),
                             null
+                        )
+
+                        val path = "/data/media/0/Movies/Craft+_Builds_Videos" + "/$name.mp4"
+                        Log.d("path", "$path")
+                        val storage = Storage() // Create an instance of the Storage class
+                        storage.uploadVideo(
+                            path = path,
+                            onSuccess = {
+                                Toast.makeText(
+                                    context,
+                                    "Video uploaded successfully!",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            },
+                            onFailure = { exception ->
+                                Toast.makeText(
+                                    context,
+                                    "Failed to upload video: ${exception.message}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         )
                     }
                 }

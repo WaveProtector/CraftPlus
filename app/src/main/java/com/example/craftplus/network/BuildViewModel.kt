@@ -1,13 +1,11 @@
 package com.example.craftplus.network
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.craftplus.FirestoreRepository
-import com.example.craftplus.network.BuildObject
 import kotlinx.coroutines.launch
 import java.io.IOException
 

@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.craftplus.Media.MediaListScreen
 import com.example.craftplus.network.BuildViewModel
 
 @Composable
@@ -51,6 +52,15 @@ fun NavGraph (navController: NavHostController) {
 
         composable(route = Screens.Camera.route) {
             RecordBuildScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+            )
+        }
+
+        composable(route = Screens.Media.route) {
+            MediaListScreen(
                 navController = navController,
                 modifier = Modifier
                     .fillMaxSize()

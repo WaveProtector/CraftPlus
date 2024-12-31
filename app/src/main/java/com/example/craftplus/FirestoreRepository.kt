@@ -1,5 +1,7 @@
 package com.example.craftplus
 
+import android.annotation.SuppressLint
+import android.net.Uri
 import android.util.Log
 import com.example.craftplus.network.BuildObject
 import com.google.firebase.Timestamp
@@ -8,6 +10,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
+import java.io.File
 import java.io.IOException
 
 class FirestoreRepository(private val firestore: FirebaseFirestore) {
@@ -21,9 +24,7 @@ class FirestoreRepository(private val firestore: FirebaseFirestore) {
     suspend fun saveBuildObject(build: BuildObject) {
         try {
             // Referência à coleção "Builds"
-            Log.d("LINK", firestore.toString())
             val collectionRef = firestore.collection("Builds")
-            Log.d("REF", collectionRef.toString())
             // Adicionar um timestamp ao objeto BuildObject antes de salvar
             //val buildWithTimestamp = build.copy(id = build.id, title = build.title, starter= build.starter)
 
@@ -104,6 +105,7 @@ class FirestoreRepository(private val firestore: FirebaseFirestore) {
 
 // Singleton Instance
 object RepositoryProvider {
+    @SuppressLint("StaticFieldLeak")
     private val firestore = FirebaseFirestore.getInstance()
     val firestoreRepository: FirestoreRepository by lazy {
         FirestoreRepository(firestore)

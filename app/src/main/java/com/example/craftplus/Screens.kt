@@ -11,6 +11,7 @@ sealed class Screens(val route: String) {
     object Roles: Screens("roles")
     object Camera: Screens("camera")
     object RolesConfirm: Screens("roles_confirm")
+    object Media: Screens("media")
     object BlockTracking: Screens("block_tracking")
     object BuildVideoTracking: Screens("build_video_tracking")
 }
