@@ -2,7 +2,6 @@ package com.example.craftplus
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,15 +11,37 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.craftplus.Media.MediaListScreen
 import com.example.craftplus.network.BuildViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 @Composable
 fun NavGraph (navController: NavHostController) {
+    // Firebase instance variable
+    var auth: FirebaseAuth = Firebase.auth
+    var startDest = Screens.Login.route
 
+    if (auth.currentUser != null) {
+        startDest = Screens.Home.route
+    }
     NavHost(
         navController = navController,
-        startDestination = Screens.Home.route // TODO Deve ser depois alterado para login! Só está assim para efeitos de teste
+        startDestination = startDest
     )
     {
+        composable(route = Screens.Login.route) {
+            Login(navController = navController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center))
+        }
+
+        composable(route = Screens.Register.route) {
+            Register(navController = navController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center))
+        }
 
         composable(route = Screens.Home.route) {
             Home(navController = navController,

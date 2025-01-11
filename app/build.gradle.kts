@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.firebase.firestore)
     implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

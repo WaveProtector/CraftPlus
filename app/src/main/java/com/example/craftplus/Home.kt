@@ -1,5 +1,6 @@
 package com.example.craftplus
 
+import android.content.Intent
 import android.graphics.Paint.Align
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -37,13 +39,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun Home(navController: NavController, modifier: Modifier = Modifier) {
+    val user = FirebaseAuth.getInstance().currentUser
     // TODO -> Get the avatar from DB, instead of using the "template" one
     val pfpSource = R.drawable.steve_pfp
-    // TODO -> Get the username from DB, instead of the "template" one
-    val username = "Steve"
+    val username = user?.email?.substringBefore('@')
 
     // State for the search query
     val searchQuery = remember { mutableStateOf(TextFieldValue("")) }
@@ -84,9 +87,24 @@ fun Home(navController: NavController, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(100.dp))
 
         Text("Builds in progress", fontSize = 26.sp)
-        // TODO
+        // TODO -> Não é muito importante implementar esta parte tho, isto é mais um "tracker de builds"
 
-        Spacer(modifier = Modifier.height(150.dp))
+        Spacer(modifier = Modifier.height(60.dp))
+
+        // Logout button
+        Button(onClick = { logout(navController) }) {
+            Text(text = "Logout")
+        }
+
+    }
+}
+
+// Function to handle logout
+private fun logout(navController: NavController) {
+    FirebaseAuth.getInstance().signOut()
+    // Redirect to LoginActivity after logging out
+    navController.navigate("login") {
+        popUpTo("home") { inclusive = true } // Limpa o histórico de navegação e volta para a tela de login. Isto é para impedir que o user possa voltar à tela inicial (Home) após o logout.
     }
 }
 

@@ -1,5 +1,6 @@
 package com.example.craftplus
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -33,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.craftplus.ui.theme.CraftPlusTheme
 import com.firebase.ui.auth.AuthUI
@@ -45,7 +47,6 @@ import com.google.firebase.ktx.Firebase
 class MainActivity : ComponentActivity() {
 
     // Firebase instance variables
-    private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +55,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             CraftPlusTheme {
                 val navController = rememberNavController()
+
+                // Screens that don't show the bottom navigation
+                val hideBottomNavigationScreens = listOf("login", "register")
 
                 //Bottom Navigation bar
                 val items = listOf(
@@ -93,39 +97,44 @@ class MainActivity : ComponentActivity() {
                     ) {
                         Scaffold(
                             bottomBar = {
-                                NavigationBar {
-                                    items.forEachIndexed { index, item ->
-                                        NavigationBarItem(
-                                            selected = selectedItemIndex == index,
-                                            onClick = {
-                                                selectedItemIndex = index
-                                                navController.navigate(item.title)
-                                            },
-                                            label = {
-                                                Text(text = item.title)
-                                            },
-                                            alwaysShowLabel = false,
-                                            icon = {
-                                                BadgedBox(
-                                                    badge = {
-                                                        if (item.badgeCount != null) {
-                                                            Badge {
-                                                                Text(text = item.badgeCount.toString())
+                                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                                val currentRoute = navBackStackEntry?.destination?.route
+                                // Verifica se o Bottom Navigation deve ser exibido
+                                if (currentRoute !in hideBottomNavigationScreens) {
+                                    NavigationBar {
+                                        items.forEachIndexed { index, item ->
+                                            NavigationBarItem(
+                                                selected = selectedItemIndex == index,
+                                                onClick = {
+                                                    selectedItemIndex = index
+                                                    navController.navigate(item.title)
+                                                },
+                                                label = {
+                                                    Text(text = item.title)
+                                                },
+                                                alwaysShowLabel = false,
+                                                icon = {
+                                                    BadgedBox(
+                                                        badge = {
+                                                            if (item.badgeCount != null) {
+                                                                Badge {
+                                                                    Text(text = item.badgeCount.toString())
+                                                                }
+                                                            } else if (item.hasNews) {
+                                                                Badge()
                                                             }
-                                                        } else if (item.hasNews) {
-                                                            Badge()
                                                         }
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = if (index == selectedItemIndex) {
+                                                                item.selectedIcon
+                                                            } else item.unselectedIcon,
+                                                            contentDescription = item.title
+                                                        )
                                                     }
-                                                ) {
-                                                    Icon(
-                                                        imageVector = if (index == selectedItemIndex) {
-                                                            item.selectedIcon
-                                                        } else item.unselectedIcon,
-                                                        contentDescription = item.title
-                                                    )
                                                 }
-                                            }
-                                        )
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -139,36 +148,15 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Initialize Firebase Auth and check if the user is signed in
-        auth = Firebase.auth
-        if (auth.currentUser == null) {
-            // Not signed in, launch the Sign In activity
-            startActivity(Intent(this, SignInActivity::class.java))
-            finish()
-            return
-        }
-
         // Initialize Realtime Database
         db = Firebase.firestore
     }
 
-    public override fun onStart() {
-        super.onStart()
-        //signOut()
-        // Check if user is signed in.
-        if (auth.currentUser == null) {
-            // Not signed in, launch the Sign In activity
-            startActivity(Intent(this, SignInActivity::class.java))
-            finish()
-            return
-        }
-    }
-
-    private fun signOut() {
-        AuthUI.getInstance().signOut(this)
-        startActivity(Intent(this, SignInActivity::class.java))
-        finish()
-    }
+//    private fun signOut() {
+//        AuthUI.getInstance().signOut(this)
+//        startActivity(Intent(this, SignInActivity::class.java))
+//        finish()
+//    }
 
     data class BottomNavigationItem(
         val title: String,
@@ -177,4 +165,5 @@ class MainActivity : ComponentActivity() {
         val hasNews: Boolean,
         val badgeCount: Int? = null
     )
+
 }

@@ -24,6 +24,7 @@ firebaseFirestore = "25.1.1"
 firebaseAuth = "23.1.0"
 cameraLifecycle = "1.4.0"
 playServicesAuth = "21.3.0"
+coreKtxVersion = "1.6.1"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -60,6 +61,7 @@ androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycl
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-guava = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-guava", version.ref = "kotlinxCoroutinesGuava" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
