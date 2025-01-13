@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.test.core.app.ApplicationProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 /** Private vars **/
 private lateinit var auth: FirebaseAuth
@@ -81,11 +82,27 @@ private fun loginUser(email: String, password: String, navController: NavControl
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-                    // Navigate to home page after login success
-                    navController.navigate("home") {
-                        // Optional: Clear back stack to prevent user from navigating back to login
-                        popUpTo("login") { inclusive = true }
+                    val userId = FirebaseAuth.getInstance().currentUser?.uid
+                    if (userId != null) {
+                        // Atualizar o status "online" para true no Firestore
+                        val db = FirebaseFirestore.getInstance()
+                        db.collection("Users").document(userId).update("online", true)
+                            .addOnCompleteListener { updateTask ->
+                                if (updateTask.isSuccessful) {
+                                    Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
+                                    navController.navigate("home") {
+                                        popUpTo("login") { inclusive = true }
+                                    }
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Failed to update online status: ${updateTask.exception?.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                    } else {
+                        Toast.makeText(context, "Failed to retrieve user ID", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     // Handle login failure

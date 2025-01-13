@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.test.core.app.ApplicationProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
 
 private lateinit var auth: FirebaseAuth
 
@@ -36,6 +38,7 @@ fun Register (navController: NavController, modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     // Texto dos campos de textEdit
+    var usernameText by remember { mutableStateOf("") }
     var emailText by remember { mutableStateOf("") }
     var pwdText by remember { mutableStateOf("") }
     var confirmPwdText by remember { mutableStateOf("") }
@@ -48,6 +51,12 @@ fun Register (navController: NavController, modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
+        OutlinedTextField(
+            value = usernameText,
+            onValueChange = { usernameText = it },
+            label = { Text("username") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+        )
         OutlinedTextField(
             value = emailText,
             onValueChange = { emailText = it },
@@ -70,7 +79,7 @@ fun Register (navController: NavController, modifier: Modifier = Modifier) {
         )
         // Register button
         Button(
-            onClick = { registerUser(emailText, pwdText, confirmPwdText, navController, context) },
+            onClick = { registerUser(usernameText, emailText, pwdText, confirmPwdText, navController, context) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = "Register")
@@ -91,8 +100,8 @@ fun Register (navController: NavController, modifier: Modifier = Modifier) {
     }
 }
 
-private fun registerUser(email: String, pwd: String, confirmPwd: String, navController: NavController, context: Context) {
-    if (email.isEmpty() || pwd.isEmpty() || confirmPwd.isEmpty()) {
+private fun registerUser(username: String, email: String, pwd: String, confirmPwd: String, navController: NavController, context: Context) {
+    if (username.isEmpty() || email.isEmpty() || pwd.isEmpty() || confirmPwd.isEmpty()) {
         Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
     } else if (pwd != confirmPwd) {
         Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
@@ -101,10 +110,39 @@ private fun registerUser(email: String, pwd: String, confirmPwd: String, navCont
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, pwd)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
-                    navController.navigate("home") // Navigate to home after successful registration
+                    val userId = task.result.user?.uid
+                    if (userId != null) {
+                        // Reference para a Firestore
+                        val db = FirebaseFirestore.getInstance()
+                        val userMap = mapOf(
+                            "email" to email,
+                            "username" to username,
+                            "online" to true // user fica online logo após o register!
+                        )
+
+                        // Salvar dados do user na Firestore
+                        db.collection("Users").document(userId).set(userMap)
+                            .addOnCompleteListener { dbTask ->
+                                if (dbTask.isSuccessful) {
+                                    Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
+                                    navController.navigate("home") // Navegar para home após register
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Failed to save user data: ${dbTask.exception?.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                    } else {
+                        Toast.makeText(context, "Failed to retrieve user ID", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
-                    Toast.makeText(context, "Registration Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Registration Failed: ${task.exception?.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
     }
