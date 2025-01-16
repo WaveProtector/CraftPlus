@@ -1,16 +1,12 @@
 package com.example.craftplus
 
 import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,181 +15,160 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.craftplus.network.BuildObject
 import com.example.craftplus.network.BuildViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+
+// Global vars
+val userEmail = FirebaseAuth.getInstance().currentUser?.email // Get email from current user
 
 @Composable
 fun CreateBuildScreen(buildViewModel: BuildViewModel, navController: NavController, modifier: Modifier = Modifier) {
 
-    //IR BUSCAR A BD
-    val friends = listOf("Herobrine", "Steve", "Slender") // Lista de amigos
-    var selectedFriend by remember { mutableStateOf("") }
-    var buildTitle by remember { mutableStateOf("") } // Armazena o título do Build
-    val build = BuildObject(
-        id = "mockId123",
-        title = buildTitle,
-        starter = "John Doe",
-        friend = selectedFriend,
-        builder = "Builder Bot",
-        recorder = "Camera Bot",
-        blocks = 150, // Exemplo de número de blocos
-        video = "https://example.com/mock_video.mp4", // URL de um vídeo fictício
-        steps = 5 // Exemplo de número de passos
-    )
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var invitedEmail by remember { mutableStateOf("") }
+
+    val inviteViewModel: InviteViewModel = viewModel()
+    inviteViewModel.checkForInvites(userEmail.toString(), navController)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
+        //verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text("Create Build", fontSize = 28.sp)
 
-        TopBar(navController, "Create Build")
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo de título
-        //GUARDAR NA BD
-        TitleInput(onTitleChanged = { newTitle ->
-            buildTitle = newTitle // Atualiza o título na variável
-        })
-
-        Spacer(modifier = Modifier.height(48.dp))
-
-        //GUARDAR NA BD
-        // Texto "Choose a Friend"
-        Text(
-            text = "Choose a Friend",
-            color = Color.Black,
-            fontSize = 28.sp,
-            modifier = Modifier.padding(bottom = 16.dp)
+        OutlinedTextField(
+            value = title,
+            onValueChange = { title = it },
+            label = { Text("Title") },
+            modifier = Modifier.fillMaxWidth()
         )
 
-        // Campo de pesquisa
-        FriendSelectionDropdown(
-            friends = friends,
-            selectedFriend = selectedFriend,
-            onFriendSelected = { friend ->
-                selectedFriend = friend // Atualiza o amigo selecionado
-            }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Campo para descrição do build
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("Description") },
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 5
         )
 
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.weight(1f))
+        UserDropdown { invitedEmail = it }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp) // Adicione padding, se necessário
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botão de envio
+        Button(
+            onClick = {
+                if (userEmail != null) {
+                    createBuild(title, description, userEmail, invitedEmail, navController)
+                }
+            },
+            enabled = title.isNotEmpty() && description.isNotEmpty() && invitedEmail.isNotEmpty()
         ) {
-            // Botões Cancelar e Iniciar
-            Row(
-                modifier = Modifier.fillMaxWidth()
-                    .align(Alignment.Center),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(onClick = {
-                    Log.d("SAVE", build.toString())
-                    buildViewModel.saveCurrentBuild(build); navController.navigate(Screens.Roles.route) },
-                    modifier = Modifier.wrapContentSize().padding(horizontal = 8.dp))
-                {
-                    Text("Start")
-                }
-                Button(onClick = { navController.navigate(Screens.Home.route) },
-                    modifier = Modifier.wrapContentSize().padding(horizontal = 8.dp)) {
-                    Text("Cancel")
-                }
-            }
+            Text("Create Build")
         }
-        //Spacer(modifier = Modifier.height(250.dp))
     }
 }
 
+fun createBuild(title: String, description: String, userEmail: String, invitedEmail: String, navController: NavController) {
+    val db = FirebaseFirestore.getInstance()
+    val buildData = mapOf(
+        "title" to title,
+        "description" to description,
+        "ownerEmail" to userEmail,
+        "invitedEmail" to invitedEmail, // Adiciona apenas o criador no início
+        "completed" to false,
+        "status" to "inviting",
+        "builder" to "",
+        "recorder" to "",
+        "usersJoined" to 0,
+        "videos" to arrayListOf<Map<String,String>>()
+    ) // !! O campo videos é um array de maps que contem o stepNumber e o videoUrl !!
 
-// guardar o titulo
-@Composable
-fun TitleInput(onTitleChanged: (String) -> Unit) {
-
-    var title by remember { mutableStateOf("") } // Estado para armazenar o título
-
-    // Campo de título
-    OutlinedTextField(
-        value = title,
-        onValueChange = {
-            title = it // Atualiza o estado do título
-            onTitleChanged(it) // Envia o título para a função callback
-        },
-        label = { Text("Title") },
-        placeholder = { Text("Your title build here...") },
-        modifier = Modifier.fillMaxWidth()
-    )
+    db.collection("Builds")
+        .add(buildData)
+        .addOnSuccessListener { document ->
+            Log.d("Firestore", "Build created with ID: ${document.id}")
+            // Enviar convite e direcionar para a página de "aguardar resposta"
+            navController.navigate(Screens.WaitForResponse.route.replace("{buildId}", document.id))
+        }
+        .addOnFailureListener { exception ->
+            Log.e("Firestore", "Error adding document", exception)
+        }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FriendSelectionDropdown(
-    friends: List<String>,
-    selectedFriend: String,
-    onFriendSelected: (String) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) } // Controla se o menu está expandido
-    var searchQuery by remember { mutableStateOf(selectedFriend) } // Controla o texto pesquisado
-    var dropdownHeight by remember { mutableStateOf(0) } // Para controlar a altura do menu
+fun UserDropdown(selectedUser: (String) -> Unit) {
+    val db = FirebaseFirestore.getInstance()
+    var expanded by remember { mutableStateOf(false) }
+    var users by remember { mutableStateOf(listOf<String>()) }
+    var selectedUserEmail by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        // Busca os usuários online
+        db.collection("Users")
+            .whereEqualTo("online", true)
+            .get()
+            .addOnSuccessListener { documents ->
+                val fetchedUsers = documents
+                .map { it.getString("email") ?: "" }
+                .filter { it.isNotEmpty() && it != userEmail } // Exclui o usuário atual
+                users = fetchedUsers
+            }
+            .addOnFailureListener { Log.e("Firestore", "Error fetching users", it) }
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded } // Alterna entre expandido/fechado
+        onExpandedChange = { expanded = !expanded },
+        modifier = Modifier.fillMaxWidth()
     ) {
-        // Campo de texto para pesquisa
         OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            label = { Text("Choose a Friend") },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor() // Conecta o menu ao campo
+            value = selectedUserEmail,
+            onValueChange = { selectedUserEmail = it },
+            label = { Text("Select User") },
+            readOnly = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+            modifier = Modifier.menuAnchor()
         )
 
-        // Filtro de amigos baseado no texto pesquisado
-        val filteredFriends = friends.filter {
-            it.contains(searchQuery, ignoreCase = true)
-        }
-
-        // Menu suspenso
-        Box(modifier = Modifier.zIndex(1f)) {
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-            ) {
-                filteredFriends.forEach { friend ->
-                    //NAO CONSEGUI POR ISTO IMEDIATAMENTE ABAIXO DO MENU...
-                    DropdownMenuItem(
-                        onClick = {
-                            searchQuery = friend // Define o amigo selecionado
-                            onFriendSelected(friend)
-                            expanded = false // Fecha o menu
-                        },
-                        text = { Text(text = friend) }
-                    )
-                }
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            users.forEach { userEmail ->
+                DropdownMenuItem(
+                    onClick = {
+                        selectedUserEmail = userEmail
+                        selectedUser(userEmail)
+                        expanded = false
+                    },
+                    text = { Text(userEmail) }
+                )
             }
         }
-
     }
 }
-

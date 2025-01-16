@@ -7,8 +7,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.craftplus.Media.MediaListScreen
 import com.example.craftplus.network.BuildViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -57,27 +59,65 @@ fun NavGraph (navController: NavHostController) {
                     .wrapContentSize(Alignment.Center))
         }
 
-        composable(route = Screens.Roles.route) {
-            ChooseBuildRoleScreen(navController = navController,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center))
+        composable( route = Screens.WaitForResponse.route,
+            arguments = listOf(navArgument("buildId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val buildId = backStackEntry.arguments?.getString("buildId")
+            if (buildId != null) {
+                WaitForResponseScreen(
+                    buildId = buildId,
+                    navController = navController,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center)
+                )
+            }
         }
 
-        composable(route = Screens.RolesConfirm.route) {
-            ConfirmBuildRoleScreen(navController = navController,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center))
+
+        composable( route = Screens.ChooseRoles.route,
+            arguments = listOf(navArgument("buildId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val buildId = backStackEntry.arguments?.getString("buildId")
+            if (buildId != null) {
+                ChooseRolesScreen(
+                    buildId = buildId,
+                    navController = navController,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center)
+                )
+            }
         }
 
-        composable(route = Screens.Camera.route) {
-            RecordBuildScreen(
-                navController = navController,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center)
-            )
+        composable(route = Screens.Builder.route,
+            arguments = listOf(navArgument("buildId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val buildId = backStackEntry.arguments?.getString("buildId")
+            if (buildId != null) {
+                BuilderScreen(
+                    navController = navController,
+                    buildId = buildId,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center)
+                )
+            }
+        }
+
+        composable(route = Screens.Recorder.route,
+            arguments = listOf(navArgument("buildId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val buildId = backStackEntry.arguments?.getString("buildId")
+            if (buildId != null) {
+                RecorderScreen(
+                    navController = navController,
+                    buildId = buildId,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center)
+                )
+            }
         }
 
         composable(route = Screens.Media.route) {

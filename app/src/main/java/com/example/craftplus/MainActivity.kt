@@ -1,17 +1,17 @@
 package com.example.craftplus
 
-import android.content.Context
-import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -37,9 +37,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.craftplus.ui.theme.CraftPlusTheme
-import com.firebase.ui.auth.AuthUI
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -149,6 +147,37 @@ class MainActivity : ComponentActivity() {
 
         // Initialize Realtime Database
         db = Firebase.firestore
+
+        // Apenas adicionado para debug purposes.. Devido a um erro ao carregar nos botões de builder ou recorder
+        FirebaseApp.initializeApp(this)
+
+        val REQUIRED_PERMISSIONS =
+            mutableListOf (
+                android.Manifest.permission.CAMERA,
+                android.Manifest.permission.RECORD_AUDIO
+            ).apply {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+                    add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
+            }.toTypedArray()
+
+        val activityResultLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestMultiplePermissions())
+            { permissions ->
+                // Handle Permission granted/rejected
+                var permissionGranted = true
+                permissions.entries.forEach {
+                    if (it.key in REQUIRED_PERMISSIONS && it.value == false)
+                        permissionGranted = false
+                }
+                if (!permissionGranted) {
+                    Toast.makeText(baseContext,
+                        "Permission request denied. Please grant permissions in order to use important functionalities.",
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+        activityResultLauncher.launch(REQUIRED_PERMISSIONS) // ASKS FOR PERMISSIONS
     }
 
 //    private fun signOut() {

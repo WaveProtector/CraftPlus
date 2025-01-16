@@ -68,7 +68,7 @@ dependencies {
 
     // Google Sign In SDK
     // NAO ALTERAR SENAO CRASHA A AUTENTICACAO
-    implementation("com.google.android.gms:play-services-auth:20.5.0")
+    //implementation("com.google.android.gms:play-services-auth:20.5.0") Não está a ser usado..
 
 
     // Firebase SDK
@@ -82,6 +82,8 @@ dependencies {
     implementation("androidx.camera:camera-camera2:1.2.2")
     implementation("androidx.camera:camera-lifecycle:1.2.2")
     implementation("androidx.camera:camera-view:1.2.2")
+    implementation("androidx.camera:camera-video:1.2.2")
+    implementation("androidx.camera:camera-extensions:1.2.2")
 
     // Accompanist Permissions
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
@@ -109,4 +111,14 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
+    // Supabase DB para vídeos
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.0.3"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt:3.0.3")
+    implementation("io.github.jan-tennert.supabase:auth-kt:3.0.3")
+    implementation("io.github.jan-tennert.supabase:realtime-kt:3.0.3")
+    implementation("io.github.jan-tennert.supabase:storage-kt:3.0.3")
+
+    // Necessário para o supabase
+    implementation("io.ktor:ktor-client-android:3.0.0-rc-1")
 }

@@ -2,6 +2,7 @@ package com.example.craftplus
 
 import android.content.Intent
 import android.graphics.Paint.Align
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -24,6 +25,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,9 +42,11 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
 @Composable
 fun Home(navController: NavController, modifier: Modifier = Modifier) {
@@ -54,6 +58,11 @@ fun Home(navController: NavController, modifier: Modifier = Modifier) {
     val username = remember { mutableStateOf<String?>(null) }
     // State for the search query
     val searchQuery = remember { mutableStateOf(TextFieldValue("")) }
+    val inviteViewModel: InviteViewModel = viewModel()
+    if (user != null) {
+        Log.d("Checking for invites", "User is checking for create build invites...")
+        inviteViewModel.checkForInvites(user.email.toString(), navController)
+    }
 
     // Fetch username from Firestore based on email
     LaunchedEffect(user?.email) {
@@ -112,7 +121,6 @@ fun Home(navController: NavController, modifier: Modifier = Modifier) {
         Button(onClick = { logout(navController) }) {
             Text(text = "Logout")
         }
-
     }
 }
 
@@ -148,4 +156,6 @@ private fun logout(navController: NavController) {
         }
     }
 }
+
+
 
