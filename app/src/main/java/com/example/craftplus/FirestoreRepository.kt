@@ -98,8 +98,17 @@ class FirestoreRepository(private val firestore: FirebaseFirestore) {
         }
     }
 
-    fun getBuildObjects(): List<BuildObject>? {
-        TODO("Not yet implemented")
+    suspend fun getBuildObjects(): List<BuildObject> {
+        val db = FirebaseFirestore.getInstance()
+        return try {
+            val snapshot = db.collection("Builds").get().await()
+            snapshot.documents.mapNotNull { document ->
+                document.toObject(BuildObject::class.java)?.apply { id = document.id }
+            }
+        } catch (e: Exception) {
+            // Log the exception or handle it as needed
+            emptyList()
+        }
     }
 }
 

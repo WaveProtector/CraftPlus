@@ -1,5 +1,6 @@
 package com.example.craftplus.network
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -39,7 +40,7 @@ class BuildViewModel(
     /**
      * Gets BuildObject information from the repository and updates the state.
      */
-    private fun getBuildObjects() {
+    fun getBuildObjects() {
         viewModelScope.launch {
             try {
                 listResult = repository.getBuildObjects() // Fetch BuildObjects from the repository
@@ -47,6 +48,9 @@ class BuildViewModel(
                     "Success: ${listResult!!.size} builds retrieved",
                     listResult!!.random()
                 )
+//                listResult!!.forEach { buildObject ->
+//                    Log.d("builds", buildObject.id)
+//                }
             } catch (e: IOException) {
                 buildUiState = BuildUiState.Error
             }
