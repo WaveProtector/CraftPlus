@@ -1,58 +1,159 @@
 package com.example.craftplus.Media
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import androidx.compose.ui.unit.sp
 import com.example.craftplus.R
+import com.example.craftplus.network.BuildObject
+
+val count = 0;
 
 @Composable
 fun MediaListItem(
     file: MediaFile,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    build: BuildObject?
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+    //val mockBuild = getMockBuild()
+
+    val context = LocalContext.current
+    val thumbnail = generateVideoThumbnail(file.uri, context)
+    val duration = getVideoDuration(file.uri, context)
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        shape = RectangleShape,
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xbf182e6f) // Cor azul com opacidade
+        )
     ) {
-        when (file.type) {
-            MediaType.IMAGE -> {
-                AsyncImage(
-                    model = file.uri,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(100.dp)
-                )
+        Row(
+            modifier = Modifier,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            when (file.type) {
+                MediaType.VIDEO -> {
+                    if (thumbnail != null) {
+                        Image(
+                            bitmap = thumbnail.asImageBitmap(),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(100.dp)
+                                .padding(3.dp)
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.video_camera_back_24px),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .width(100.dp)
+                                .padding(3.dp)
+                        )
+                    }
+                }
+                else -> {
+                    // Aqui você pode adicionar o layout para áudio e imagem caso queira
+                }
             }
 
-            MediaType.VIDEO -> {
-                Image(
-                    painter = painterResource(id = R.drawable.video_camera_back_24px),
-                    contentDescription = null,
-                    modifier = Modifier.width(100.dp)
-                )
-            }
+            Spacer(modifier = Modifier.width(16.dp))
 
-            MediaType.AUDIO -> {
-                Image(
-                    painter = painterResource(id = R.drawable.mic_24px),
-                    contentDescription = null,
-                    modifier = Modifier.width(100.dp)
+            Column(
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "Step number: ${build?.steps}",
+                    color = Color.White, // Cor do texto
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp // Tamanho maior da fonte
+                    )
+                )
+                Text(
+                    text = "Blocks used: ${build?.blocks}",
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp // Tamanho maior da fonte
+                    )
+                )
+
+                Text(
+                    text = "NAME: ${build?.title}",
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp // Tamanho maior da fonte
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(50.dp))
+
+                Text(
+                    text = "Duration: ${duration?.let { it / 1000 }}s",
+                    color = Color.Black, // Cor branca para a duração
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 18.sp // Tamanho maior da fonte para a duração
+                    )
                 )
             }
         }
-        Text(
-            text = "${file.name} - ${file.type}",
-            modifier = Modifier
-                .padding(16.dp)
-                .weight(1f)
-        )
     }
 }
+
+fun generateVideoThumbnail(videoUri: android.net.Uri, context: Context): Bitmap? {
+    val retriever = MediaMetadataRetriever()
+    return try {
+        retriever.setDataSource(context, videoUri)
+        retriever.getFrameAtTime(1000000) // Frame em 1 segundo
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    } finally {
+        retriever.release()
+    }
+}
+
+fun getVideoDuration(videoUri: android.net.Uri, context: Context): Long? {
+    val retriever = MediaMetadataRetriever()
+    return try {
+        retriever.setDataSource(context, videoUri)
+        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    } finally {
+        retriever.release()
+    }
+}
+
+

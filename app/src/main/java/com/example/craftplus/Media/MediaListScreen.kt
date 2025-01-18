@@ -2,6 +2,7 @@ package com.example.craftplus.Media
 
 import android.Manifest
 import android.os.Build
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,16 +14,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.craftplus.network.BuildObject
+import com.example.craftplus.network.BuildViewModel
 
 @Composable
 fun MediaListScreen(
     navController: NavController,  // Accept navController as a parameter
-    modifier: Modifier = Modifier   // Accept modifier to customize UI layout
+    modifier: Modifier = Modifier,
+    buildViewModel: BuildViewModel
 ) {
 
     val mediaReader = MediaReader(
         context = LocalContext.current
     )
+
+    //AINDA E PRECISO ALTERAR AQUI
+    val builds = buildViewModel.getBuildObjects();
+    val build: BuildObject? = builds?.random()
+    val buildstepsvideo = build?.video;
 
     // ViewModelFactory integrated inside the composable
     val viewModel: MediaViewModel = viewModel(
@@ -53,11 +62,13 @@ fun MediaListScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            //Log.d("GETS", builds.toString())
             // Observing the list of files from the viewModel
             items(viewModel.files) { file ->
                 MediaListItem(
                     file = file,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    build = build
                 )
             }
         }

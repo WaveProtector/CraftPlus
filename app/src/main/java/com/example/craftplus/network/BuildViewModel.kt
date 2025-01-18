@@ -40,7 +40,7 @@ class BuildViewModel(
     /**
      * Gets BuildObject information from the repository and updates the state.
      */
-    fun getBuildObjects() {
+    fun getBuildObjects(): List<BuildObject>? {
         viewModelScope.launch {
             try {
                 listResult = repository.getBuildObjects() // Fetch BuildObjects from the repository
@@ -48,13 +48,25 @@ class BuildViewModel(
                     "Success: ${listResult!!.size} builds retrieved",
                     listResult!!.random()
                 )
-//                listResult!!.forEach { buildObject ->
-//                    Log.d("builds", buildObject.id)
-//                }
+                listResult!!.map {
+                    BuildObject(
+                        id = it.id,
+                        title = it.title,
+                        starter = it.starter,
+                        friend = it.friend,
+                        builder = it.builder,
+                        recorder = it.recorder,
+                        blocks = it.blocks,
+                        video = it.video,
+                        steps = it.steps
+                    )
+                }
+
             } catch (e: IOException) {
                 buildUiState = BuildUiState.Error
             }
         }
+        return listResult
     }
 
     /**
