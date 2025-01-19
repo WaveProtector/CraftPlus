@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.craftplus.R
 import com.example.craftplus.network.BuildObject
+import com.example.craftplus.network.StepObject
 
 val count = 0;
 
@@ -36,7 +37,7 @@ val count = 0;
 fun MediaListItem(
     file: MediaFile,
     modifier: Modifier = Modifier,
-    build: BuildObject?
+    step: StepObject?
 ) {
     //val mockBuild = getMockBuild()
 
@@ -90,7 +91,7 @@ fun MediaListItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Step number: ${build?.steps}",
+                    text = "Step number: ${step?.numStep}",
                     color = Color.White, // Cor do texto
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,
@@ -98,16 +99,7 @@ fun MediaListItem(
                     )
                 )
                 Text(
-                    text = "Blocks used: ${build?.blocks}",
-                    color = Color.White,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp // Tamanho maior da fonte
-                    )
-                )
-
-                Text(
-                    text = "NAME: ${build?.title}",
+                    text = "Blocks used: ${step?.blocks?.sumOf { it.amount } ?: 0}",
                     color = Color.White,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,

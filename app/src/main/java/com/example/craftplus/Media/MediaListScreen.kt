@@ -16,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.craftplus.network.BuildObject
 import com.example.craftplus.network.BuildViewModel
+import com.example.craftplus.network.StepObject
 
 @Composable
 fun MediaListScreen(
@@ -29,9 +30,21 @@ fun MediaListScreen(
     )
 
     //AINDA E PRECISO ALTERAR AQUI
-    val builds = buildViewModel.getBuildObjects();
-    val build: BuildObject? = builds?.random()
-    val buildstepsvideo = build?.video;
+    val builds: List<BuildObject>? = buildViewModel.getBuildObjects();
+    // DEPOIS E PRECISO TIRAR O RANDOM PARA ESTAR DE ACORDO
+    val steps: List<StepObject>? = builds?.random()?.steps;
+
+
+    val iterableBuilds: ListIterator<BuildObject>? = builds?.listIterator()
+    val buildSteps: List<StepObject>? = iterableBuilds?.next()?.steps;
+    val iterableSteps: ListIterator<StepObject>? = buildSteps?.listIterator()
+    //val videos: List<String>? = iterableSteps?.next().video
+
+
+    val BuildVideos: List<String> = builds
+        ?.flatMap { build -> build.steps } // Mapeia todos os steps em cada build
+        ?.mapNotNull { step -> step.video } // Mapeia os vídeos dos steps, ignorando nulls
+        ?: emptyList() // Retorna uma lista vazia se builds for null
 
     // ViewModelFactory integrated inside the composable
     val viewModel: MediaViewModel = viewModel(
@@ -64,11 +77,14 @@ fun MediaListScreen(
         ) {
             //Log.d("GETS", builds.toString())
             // Observing the list of files from the viewModel
-            items(viewModel.files) { file ->
+            items(steps ?: emptyList()) { step ->
+                // You can fetch the corresponding file for the step, e.g., using a random or specific file
+                val file = viewModel.files.random() // or any logic to fetch the file associated with the step
+
                 MediaListItem(
                     file = file,
                     modifier = Modifier.fillMaxWidth(),
-                    build = build
+                    step = step
                 )
             }
         }

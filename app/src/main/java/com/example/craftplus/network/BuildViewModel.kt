@@ -44,6 +44,7 @@ class BuildViewModel(
         viewModelScope.launch {
             try {
                 listResult = repository.getBuildObjects() // Fetch BuildObjects from the repository
+                Log.d( "LISTA", listResult.toString())
                 buildUiState = BuildUiState.Success(
                     "Success: ${listResult!!.size} builds retrieved",
                     listResult!!.random()
@@ -57,8 +58,8 @@ class BuildViewModel(
                         builder = it.builder,
                         recorder = it.recorder,
                         blocks = it.blocks,
-                        video = it.video,
-                        steps = it.steps
+                        totalSteps = it.totalSteps, // Adicionado o totalSteps
+                        steps = it.steps // Certifique-se de que a propriedade steps está sendo passada corretamente
                     )
                 }
 
@@ -100,18 +101,18 @@ class BuildViewModel(
     /**
      * Toggles a property (e.g., the "steps" or "blocks") in the current BuildObject.
      */
-    fun toggleSteps() {
-        if (buildUiState is BuildUiState.Success) {
-            val currentState = buildUiState as BuildUiState.Success
-            val currentBuild = currentState.randomBuild ?: return
-
-            // Update the steps property (e.g., increment by 1)
-            val updatedBuild = currentBuild.copy(steps = currentBuild.steps + 1)
-
-            // Update the UI state with the modified build
-            buildUiState = currentState.copy(randomBuild = updatedBuild)
-        }
-    }
+//    fun toggleSteps() {
+//        if (buildUiState is BuildUiState.Success) {
+//            val currentState = buildUiState as BuildUiState.Success
+//            val currentBuild = currentState.randomBuild ?: return
+//
+//            // Update the steps property (e.g., increment by 1)
+//            val updatedBuild = currentBuild.copy(steps = currentBuild.steps + 1)
+//
+//            // Update the UI state with the modified build
+//            buildUiState = currentState.copy(randomBuild = updatedBuild)
+//        }
+//    }
 
     /**
      * Resets the saveSuccess state after displaying the message.

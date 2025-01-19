@@ -26,9 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.craftplus.network.BlockObject
 import com.example.craftplus.network.BuildViewModel
+import com.example.craftplus.network.StepObject
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.lang.Math.random
+import kotlin.random.Random
 
 // Global vars
 val userEmail = FirebaseAuth.getInstance().currentUser?.email // Get email from current user
@@ -92,20 +96,108 @@ fun CreateBuildScreen(buildViewModel: BuildViewModel, navController: NavControll
     }
 }
 
+//TEM DE SER ALTERADO!!
 fun createBuild(title: String, description: String, userEmail: String, invitedEmail: String, navController: NavController) {
     val db = FirebaseFirestore.getInstance()
+    val defaultBlocks = listOf(
+        BlockObject(type = "stone", amount = 453),
+        BlockObject(type = "wood", amount = 998)
+    )
+    val defaultBlocks2 = listOf(
+        BlockObject(type = "bedrock", amount = 36),
+        BlockObject(type = "gravel", amount = 67)
+    )
+    val defaultBlocks3 = listOf(
+        BlockObject(type = "grass", amount = 1452),
+        BlockObject(type = "wood", amount = 93)
+    )
+    val defaultBlocks4 = listOf(
+        BlockObject(type = "crystal", amount = 741),
+        BlockObject(type = "gravel", amount = 563)
+    )
+    val defaultBlocks5 = listOf(
+        BlockObject(type = "books", amount = 5),
+        BlockObject(type = "oil", amount = 123)
+    )
+
+    val defaultSteps = listOf(
+        StepObject(
+            numStep = 1,
+            video = "",
+            blocks = defaultBlocks
+        ),
+        StepObject(
+            numStep = 2,
+            video = "",
+            blocks = defaultBlocks2
+        ),
+        StepObject(
+            numStep = 3,
+            video = "",
+            blocks = defaultBlocks5
+        )
+    )
+
+    val defaultSteps2 = listOf(
+        StepObject(
+            numStep = 1,
+            video = "",
+            blocks = defaultBlocks3
+        ),
+        StepObject(
+            numStep = 2,
+            video = "",
+            blocks = defaultBlocks4
+        ),
+        StepObject(
+            numStep = 3,
+            video = "",
+            blocks = defaultBlocks5
+        ),
+        StepObject(
+            numStep = 4,
+            video = "",
+            blocks = defaultBlocks2
+        ),
+        StepObject(
+            numStep = 5,
+            video = "",
+            blocks = defaultBlocks
+        )
+    )
+    var defaultStepsToAdd = defaultSteps2
+    if (Random.nextInt(0, 2) == 0) {
+        defaultStepsToAdd = defaultSteps
+    }
+
+
+    // Dados para o BuildObject
     val buildData = mapOf(
         "title" to title,
         "description" to description,
         "ownerEmail" to userEmail,
-        "invitedEmail" to invitedEmail, // Adiciona apenas o criador no início
-        "completed" to false,
-        "status" to "inviting",
         "builder" to "",
         "recorder" to "",
-        "usersJoined" to 0,
-        "videos" to arrayListOf<Map<String,String>>()
-    ) // !! O campo videos é um array de maps que contem o stepNumber e o videoUrl !!
+        "starter" to "",
+        "friend" to "",
+        "invitedEmail" to invitedEmail,
+        "blocks" to Random.nextInt(100, 1001), // Inicialmente 0, será atualizado conforme os passos são adicionados
+        "totalSteps" to defaultSteps.size,
+        "steps" to defaultStepsToAdd.map { step ->
+            mapOf(
+                "numStep" to step.numStep,
+                "video" to step.video,
+                "blocks" to step.blocks.map { block ->
+                    mapOf(
+                        "type" to block.type,
+                        "amount" to block.amount
+                    )
+                }
+            )
+        }
+    )// !! O campo videos é um array de maps que contem o stepNumber e o videoUrl !!
+
+    Log.d("created", buildData.toString())
 
     db.collection("Builds")
         .add(buildData)

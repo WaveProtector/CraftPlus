@@ -106,6 +106,7 @@ class FirestoreRepository(private val firestore: FirebaseFirestore) {
                 document.toObject(BuildObject::class.java)?.apply { id = document.id }
             }
         } catch (e: Exception) {
+            Log.e("getBuilds", "Error fetching build objects", e)
             // Log the exception or handle it as needed
             emptyList()
         }
