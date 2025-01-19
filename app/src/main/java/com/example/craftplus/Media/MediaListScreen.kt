@@ -1,6 +1,7 @@
 package com.example.craftplus.Media
 
 import android.Manifest
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.layout.*
@@ -14,6 +15,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.craftplus.network.BlockObject
 import com.example.craftplus.network.BuildObject
 import com.example.craftplus.network.BuildViewModel
 import com.example.craftplus.network.StepObject
@@ -79,8 +81,11 @@ fun MediaListScreen(
             // Observing the list of files from the viewModel
             items(steps ?: emptyList()) { step ->
                 // You can fetch the corresponding file for the step, e.g., using a random or specific file
-                val file = viewModel.files.random() // or any logic to fetch the file associated with the step
-
+                val file = if (viewModel.files.isNotEmpty()) {
+                    viewModel.files.random() // Pega um arquivo aleatório se a lista não estiver vazia
+                } else {
+                    alo
+                }
                 MediaListItem(
                     file = file,
                     modifier = Modifier.fillMaxWidth(),
@@ -90,6 +95,31 @@ fun MediaListScreen(
         }
     }
 }
+
+val alo = MediaFile(
+    uri = Uri.parse("mock://uri"),  // Mock de URI
+    name = "Mock File",  // Nome mock
+    type = MediaType.VIDEO,  // Tipo mock
+    buildValues = BuildObject(  // Mock completo de BuildObject
+        id = "mock_id",
+        title = "Mock Build",
+        starter = "Mock Starter",
+        friend = "Mock Friend",
+        builder = "Mock Builder",
+        recorder = "Mock Recorder",
+        blocks = 0,
+        totalSteps = 1,
+        steps = listOf(
+            StepObject(
+                numStep = 1,
+                video = "",
+                blocks = listOf(
+                    BlockObject(type = "stone", amount = 5)
+                )
+            )
+        )
+    )
+)
 
 
 
