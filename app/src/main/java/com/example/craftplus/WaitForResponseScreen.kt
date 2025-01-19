@@ -13,7 +13,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 
@@ -22,10 +21,6 @@ fun WaitForResponseScreen(buildId: String, navController: NavController, modifie
     val db = FirebaseFirestore.getInstance()
     var status by remember { mutableStateOf("inviting") }
     var listenerStatusCheck by remember { mutableStateOf<ListenerRegistration?>(null) }
-
-    LaunchedEffect(Unit) {
-        increaseUsersJoined(db, buildId)
-    }
 
     LaunchedEffect(buildId) {
         listenerStatusCheck = db.collection("Builds")
@@ -62,14 +57,5 @@ fun WaitForResponseScreen(buildId: String, navController: NavController, modifie
             Text("Invitation accepted! Redirecting...")
         }
     }
-}
-
-/**
- * Updates the usersJoined in the db when a user gets redirected here.
- */
-private fun increaseUsersJoined(db: FirebaseFirestore, buildId: String) {
-    db.collection("Builds")
-        .document(buildId)
-        .update("usersJoined", FieldValue.increment(1)) // Incrementa o número de forma atomic, mais seguro!
 }
 

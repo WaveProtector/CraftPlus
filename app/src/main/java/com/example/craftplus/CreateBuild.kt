@@ -99,11 +99,10 @@ fun createBuild(title: String, description: String, userEmail: String, invitedEm
         "description" to description,
         "ownerEmail" to userEmail,
         "invitedEmail" to invitedEmail, // Adiciona apenas o criador no início
-        "completed" to false,
         "status" to "inviting",
         "builder" to "",
         "recorder" to "",
-        "usersJoined" to 0,
+        "usersJoined" to 1, // o criador vai logo para o wait
         "videos" to arrayListOf<Map<String,String>>()
     ) // !! O campo videos é um array de maps que contem o stepNumber e o videoUrl !!
 
