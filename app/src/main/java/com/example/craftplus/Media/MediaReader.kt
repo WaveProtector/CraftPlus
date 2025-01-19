@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.MediaStore
 import androidx.core.content.ContextCompat
+import com.example.craftplus.network.BuildObject
 
 class MediaReader(
     private val context: Context
@@ -70,13 +71,16 @@ class MediaReader(
                         else -> MediaType.IMAGE
                     }
 
-                    mediaFiles.add(
-                        MediaFile(
-                            uri = contentUri,
-                            name = name,
-                            type = mediaType
+                    if (mediaType == MediaType.VIDEO) {
+                        mediaFiles.add(
+                            MediaFile(
+                                uri = contentUri,
+                                name = name,
+                                type = mediaType,
+                                BuildObject()
+                            )
                         )
-                    )
+                    }
                 }
             }
         }

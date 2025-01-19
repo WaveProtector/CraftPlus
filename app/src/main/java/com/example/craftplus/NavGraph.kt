@@ -120,12 +120,13 @@ fun NavGraph (navController: NavHostController) {
             }
         }
 
-        composable(route = Screens.Media.route) {
+        composable(route = Screens.Search.route) {
             MediaListScreen(
                 navController = navController,
                 modifier = Modifier
                     .fillMaxSize()
-                    .wrapContentSize(Alignment.Center)
+                    .wrapContentSize(Alignment.Center),
+                buildViewModel = viewModel { BuildViewModel(RepositoryProvider.firestoreRepository) }
             )
         }
 

@@ -17,11 +17,9 @@ data class BuildObject(
     //ALTERAR FUTURAMENTE PARA TER OS TIPOs
     @SerialName(value = "blocks")
     var blocks: Int = 0,
-    //ALTERAR FUTURAMENTE PARA GUARDAR O VIDEO
-    @SerialName(value = "video")
-    var video: String = "",
     //ALTERAR FUTURAMENTE PARA SER UMA ESTRUTURA NOVA
+    @SerialName(value = "totalSteps")
+    var totalSteps: Int = 0,
     @SerialName(value = "steps")
-    var steps: Int = 0
-    //MIC
+    var steps: List<StepObject> = emptyList()
 )
