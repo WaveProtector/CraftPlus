@@ -53,7 +53,7 @@ fun NavGraph (navController: NavHostController) {
         }
 
         composable(route = Screens.Builds.route) {
-            CreateBuildScreen(buildViewModel = viewModel { BuildViewModel(RepositoryProvider.firestoreRepository) },navController = navController,
+            CreateBuildScreen(navController = navController,
                 modifier = Modifier
                     .fillMaxSize()
                     .wrapContentSize(Alignment.Center))

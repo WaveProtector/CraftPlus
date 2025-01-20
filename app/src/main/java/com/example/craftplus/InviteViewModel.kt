@@ -22,7 +22,7 @@ class InviteViewModel : ViewModel() {
                     if (status == "inviting" && invitedEmail == userEmail) {
                         // Redireciona para o ecrã de espera
                         increaseUsersJoined(db, buildId)
-                        listenerRegistration?.remove()
+                        onCleared()
                         navController.navigate(Screens.WaitForResponse.route.replace("{buildId}", buildId))
                     }
                 }

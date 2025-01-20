@@ -34,7 +34,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 val userEmail = FirebaseAuth.getInstance().currentUser?.email // Get email from current user
 
 @Composable
-fun CreateBuildScreen(buildViewModel: BuildViewModel, navController: NavController, modifier: Modifier = Modifier) {
+fun CreateBuildScreen(navController: NavController, modifier: Modifier = Modifier) {
 
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -102,7 +102,7 @@ fun createBuild(title: String, description: String, userEmail: String, invitedEm
         "status" to "inviting",
         "builder" to "",
         "recorder" to "",
-        "usersJoined" to 1, // o criador vai logo para o wait
+        "usersJoined" to 0, // o owner vai logo para o wait
         "videos" to arrayListOf<Map<String,String>>()
     ) // !! O campo videos é um array de maps que contem o stepNumber e o videoUrl !!
 

@@ -78,12 +78,13 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
 
     // CameraX dependencies
-    implementation("androidx.camera:camera-core:1.2.2")
-    implementation("androidx.camera:camera-camera2:1.2.2")
-    implementation("androidx.camera:camera-lifecycle:1.2.2")
-    implementation("androidx.camera:camera-view:1.2.2")
-    implementation("androidx.camera:camera-video:1.2.2")
-    implementation("androidx.camera:camera-extensions:1.2.2")
+    var camerax_version = "1.5.0-alpha05"
+    implementation("androidx.camera:camera-core:${camerax_version}")
+    implementation("androidx.camera:camera-camera2:${camerax_version}")
+    implementation("androidx.camera:camera-lifecycle:${camerax_version}")
+    implementation("androidx.camera:camera-view:${camerax_version}")
+    implementation("androidx.camera:camera-video:${camerax_version}")
+    implementation("androidx.camera:camera-extensions:${camerax_version}")
 
     // Accompanist Permissions
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
