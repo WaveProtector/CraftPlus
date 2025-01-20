@@ -1,5 +1,6 @@
 package com.example.craftplus
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.google.firebase.firestore.FieldValue
@@ -12,6 +13,7 @@ class InviteViewModel : ViewModel() {
 
     // Verificar convites
     fun checkForInvites(userEmail: String, navController: NavController) {
+        val db = FirebaseFirestore.getInstance()
         listenerRegistration = db.collection("Builds")
             .whereEqualTo("invitedEmail", userEmail)
             .addSnapshotListener { snapshots, _ ->
@@ -19,11 +21,15 @@ class InviteViewModel : ViewModel() {
                     val status = document.getString("status") ?: "inviting"
                     val buildId = document.id
                     val invitedEmail = document.getString("invitedEmail")
-                    if (status == "inviting" && invitedEmail == userEmail) {
-                        // Redireciona para o ecrã de espera
-                        increaseUsersJoined(db, buildId)
-                        onCleared()
-                        navController.navigate(Screens.WaitForResponse.route.replace("{buildId}", buildId))
+                    val usersJoined = document.getLong("usersJoined")
+                    Log.d("usersJoined in checkForInvites", "$usersJoined") // O máximo deve ser 2!
+                    if (usersJoined != null) {
+                        if (status == "inviting" && invitedEmail == userEmail && usersJoined <= 1) {
+                            // Redireciona para o ecrã de espera
+                            increaseUsersJoined(db, buildId)
+                            navController.navigate(Screens.WaitForResponse.route.replace("{buildId}", buildId))
+                            listenerRegistration?.remove()
+                        }
                     }
                 }
             }

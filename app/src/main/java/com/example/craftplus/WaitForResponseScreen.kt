@@ -23,8 +23,6 @@ fun WaitForResponseScreen(buildId: String, navController: NavController, modifie
     var status by remember { mutableStateOf("inviting") }
     var listenerStatusCheck by remember { mutableStateOf<ListenerRegistration?>(null) }
 
-    increaseUsersJoined(db, buildId)
-
     LaunchedEffect(buildId) {
         listenerStatusCheck = db.collection("Builds")
             .document(buildId)
@@ -60,14 +58,5 @@ fun WaitForResponseScreen(buildId: String, navController: NavController, modifie
             Text("Invitation accepted! Redirecting...")
         }
     }
-}
-
-/**
- * Updates the usersJoined in the db when a user gets redirected to the wait screen.
- */
-private fun increaseUsersJoined(db: FirebaseFirestore, buildId: String) {
-    db.collection("Builds")
-        .document(buildId)
-        .update("usersJoined", FieldValue.increment(1)) // Incrementa o número de forma atomic, mais seguro!
 }
 

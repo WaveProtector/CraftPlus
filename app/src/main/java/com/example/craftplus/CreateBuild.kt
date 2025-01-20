@@ -30,8 +30,8 @@ import com.example.craftplus.network.BuildViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-// Global vars
-val userEmail = FirebaseAuth.getInstance().currentUser?.email // Get email from current user
+// Global var
+private val userEmail = FirebaseAuth.getInstance().currentUser?.email // Get email from current user
 
 @Composable
 fun CreateBuildScreen(navController: NavController, modifier: Modifier = Modifier) {
