@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.net.http.HttpResponseCache.install
 import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -118,6 +119,7 @@ fun RecorderScreen(
             // Processar o URI do vídeo aqui i.e. meter o vídeo no supabase e depois no firebase; Incrementar o step e continuar.
             val byteArray = videoUri?.let { getByteArrayFromUri(context.contentResolver, it) }
             videoUri?.let { byteArray?.let { it1 -> uploadVideoToSupabase(supabaseClient, it, it1, buildId, currentStepNumber, context) } }
+            videoUri?.let { updateSteps(buildId, currentStepNumber, it) }
             currentStepNumber++
             isProcessingRecording = false
             Log.d("RecorderScreen", "Video URI: $videoUri")
@@ -213,7 +215,7 @@ fun uploadVideoToSupabase(
     }
 }
 
-fun updateSteps(buildId: String){
+fun updateSteps(buildId: String, currentStepNumber: Int, videoUri: Uri){
     // Initialize Firestore
     val db = FirebaseFirestore.getInstance()
     // Reference to the document you want to update
@@ -221,7 +223,7 @@ fun updateSteps(buildId: String){
     // Create a new StepObject to add
     val newStep = hashMapOf(
         "numStep" to currentStepNumber,
-        "video" to "step" + currentStepNumber +"_video.mp4",
+        "video" to videoUri,
         "blocks" to listOf(
             hashMapOf("type" to "wood", "quantity" to 10),
             hashMapOf("type" to "stone", "quantity" to 5)
@@ -233,7 +235,6 @@ fun updateSteps(buildId: String){
         .addOnSuccessListener {
             // Successfully added the new step
             println("New step added to BuildObject successfully.")
-            currentStepNumber++
         }
         .addOnFailureListener { e ->
             // Failed to add the new step
