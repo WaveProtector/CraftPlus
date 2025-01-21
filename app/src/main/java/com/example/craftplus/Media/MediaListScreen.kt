@@ -52,14 +52,19 @@ import kotlin.random.Random
 fun MediaListScreen(
     navController: NavController,  // Accept navController as a parameter
     modifier: Modifier = Modifier,
+    title: String,
     buildViewModel: BuildViewModel
 ) {
 
     val builds: List<BuildObject>? = buildViewModel.getBuildObjects();
-    val build: BuildObject? = builds?.random() //BUILD ESPECIFICA
+    var build: BuildObject? = builds?.find { it.title == title }
+
+    if (build == null) {
+        build = builds?.random()
+    }
+
     val steps: List<StepObject>? = build?.steps;
     //val paths: List<String>? = steps?.map { it.video }
-
 
     val projectId = "utbdioxirmblbdwagasi"
     val bucketName = "build-videos"

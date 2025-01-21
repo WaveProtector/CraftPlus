@@ -16,4 +16,5 @@ sealed class Screens(val route: String) {
     object ChooseRoles: Screens("choose_roles/{buildId}")
     object Builder: Screens("builder/{buildId}")
     object Recorder: Screens("recorder/{buildId}")
+    object SearchFromHome: Screens("searchFromHome/{title}")
 }

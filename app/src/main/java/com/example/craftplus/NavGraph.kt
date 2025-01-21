@@ -130,19 +130,36 @@ fun NavGraph (navController: NavHostController) {
             }
         }
 
-        composable(route = Screens.Search.route) {
-            MediaListScreen(
-                navController = navController,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center),
-                buildViewModel = viewModel { BuildViewModel(RepositoryProvider.firestoreRepository) }
-            )
+        composable(route = Screens.SearchFromHome.route,
+            arguments = listOf(navArgument("title") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title")
+            if (title != null) {
+                MediaListScreen(
+                    navController = navController,
+                    title = title,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center),
+                    buildViewModel = viewModel { BuildViewModel(RepositoryProvider.firestoreRepository) }
+                )
+            }
         }
 
         composable(route = Screens.Settings.route) {
             // TODO
             VideoScreen()
+        }
+
+        composable(route = Screens.Search.route) {
+            MediaListScreen(
+                navController = navController,
+                title = "",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center),
+                buildViewModel = viewModel { BuildViewModel(RepositoryProvider.firestoreRepository) }
+            )
         }
 
     }
