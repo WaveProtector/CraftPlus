@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +43,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -52,7 +54,7 @@ class CameraRecordingActivity : ComponentActivity() {
     private var recording: Recording? = null
     private lateinit var buildId: String
     private var currentStepNumber: Int = 1 // Controla o número do passo (step)
-    private lateinit var lastVideoUri: Uri
+    private var lastVideoUri = mutableStateOf<Uri?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,8 +109,8 @@ class CameraRecordingActivity : ComponentActivity() {
 
     @Composable
     fun VideoRecordingScreen() {
-        var isRecording by remember { mutableStateOf(false) } // please don't crash..
-        var isVideoTaken by remember { mutableStateOf(false) } // please don't crash..
+        var isRecording by remember { mutableStateOf(false) }
+        var isVideoTaken by remember { mutableStateOf(false) }
 
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -123,9 +125,9 @@ class CameraRecordingActivity : ComponentActivity() {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(onClick = {
-                startRecording()
-                isRecording = true
-                isVideoTaken = true
+                    startRecording()
+                    isRecording = true
+                    isVideoTaken = true
                  },
                 enabled = !isRecording) {
                 Text("Start Recording")
@@ -134,9 +136,10 @@ class CameraRecordingActivity : ComponentActivity() {
             Spacer(modifier = Modifier.height(8.dp))
 
             Button(onClick = {
-                stopRecording()
-                isRecording = false
-                 }, enabled = isRecording && isVideoTaken) {
+                    stopRecording()
+                    isRecording = false
+                 },
+                enabled = isRecording && isVideoTaken) {
                 Text("Stop Recording")
             }
 
@@ -144,11 +147,11 @@ class CameraRecordingActivity : ComponentActivity() {
 
             Button(onClick = {
                 val resultIntent = Intent().apply {
-                    putExtra("VIDEO_URI", lastVideoUri.toString())
+                    putExtra("VIDEO_URI", lastVideoUri.value.toString())
                 }
                 setResult(RESULT_OK, resultIntent)
                 finish() // Voltar para a RecorderScreen
-            }, enabled = !isRecording) {
+            }, enabled = !isRecording && lastVideoUri.value != Uri.EMPTY && lastVideoUri.value != null) {
                 Text("Finish step $currentStepNumber")
             }
         }
@@ -172,7 +175,7 @@ class CameraRecordingActivity : ComponentActivity() {
         ) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
-            Log.d("CameraRecordingActivity", "Fez return de permissões")
+            Log.d("CameraRecordingActivity", "Nenhuma permissão das necessárias")
             return
         }
         recording = videoCapture?.output?.prepareRecording(this, outputOptions)
@@ -190,9 +193,9 @@ class CameraRecordingActivity : ComponentActivity() {
                         // Gravação finalizada
                         //isVideoTaken = true
                         //isRecording = false
-                        lastVideoUri = recordEvent.outputResults.outputUri
-                        Log.d("VideoRecordEvent.Finalize", "Gravação finalizada: $lastVideoUri")
-                        Toast.makeText(this, "Recording stopped! Saved on: $lastVideoUri", Toast.LENGTH_SHORT).show()
+                        lastVideoUri.value = recordEvent.outputResults.outputUri
+                        Log.d("VideoRecordEvent.Finalize", "Gravação finalizada: ${lastVideoUri.value}")
+                        Toast.makeText(this, "Recording stopped! Saved on: ${lastVideoUri.value}", Toast.LENGTH_SHORT).show()
                     }
                 }
             }

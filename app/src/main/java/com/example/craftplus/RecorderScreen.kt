@@ -80,7 +80,7 @@ fun RecorderScreen(
         onResult = { permissions ->
             if (permissions[Manifest.permission.CAMERA] == true && permissions[Manifest.permission.RECORD_AUDIO] == true) {
                 // Permissões concedidas
-                Log.i("Permissions", "Camera and Audio permissions granted")
+                Log.i("Permissions", "Camera and Microphone permissions granted")
             } else {
                 // Permissões negadas
                 Log.i("Permissions", "Permissions denied")
@@ -150,7 +150,7 @@ fun startRecording(
 }
 
 // Função de verificação de permissões
-fun checkPermissions(context: Context): Boolean {
+private fun checkPermissions(context: Context): Boolean {
     val cameraPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
     val audioPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
     return cameraPermission == PackageManager.PERMISSION_GRANTED && audioPermission == PackageManager.PERMISSION_GRANTED

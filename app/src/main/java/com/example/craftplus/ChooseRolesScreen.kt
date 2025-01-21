@@ -75,9 +75,9 @@ fun ChooseRolesScreen(buildId: String, navController: NavController, modifier: M
 
         Button(onClick = {
             db.collection("Builds").document(buildId).update("recorder", userEmail)
-            navController.navigate(Screens.Recorder.route.replace("{buildId}", buildId)) // TODO -> FALTA CRIAR ESTA PÁGINA, É A MAIS IMPORTANTE. A CAMERA DEVE OCUPAR A MAIORIA DO ECRÃ (NÃO A TOTALIDADE) E TERMOS UM BOTÃO PARA GRAVAR, PAUSAR E PARAR A GRAVAÇÃO (PARAR A GRAVAÇÃO ACABA A BUILD!) E TAMBÉM TER UM BOTÃO DE "STEP DONE" QUE ACABA O VÍDEO ATUAL E GUARDA-O NUM STEP1,2,ETC. E DEPOIS COMEÇA LOGO A GRAVAR OUTRO VÍDEO PARA O PRÓXIMO STEP. OS VÍDEOS DEVEM SER GUARDADOS NA SUPABASE!
+            navController.navigate(Screens.Recorder.route.replace("{buildId}", buildId))
         }) {
             Text("Record")
         }
-    } // TODO -> NO FINAL DA INTERAÇÃO DE CREATE BUILD OS USERS DEVEM SER REDIRECIONADOS AO SEU "HOME" RESPETIVO. (Screens.Home.route)
+    }
 }

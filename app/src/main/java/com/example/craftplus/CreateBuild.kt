@@ -1,6 +1,11 @@
 package com.example.craftplus
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,11 +27,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.craftplus.network.BuildViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -43,51 +49,76 @@ fun CreateBuildScreen(navController: NavController, modifier: Modifier = Modifie
     val inviteViewModel: InviteViewModel = viewModel()
     inviteViewModel.checkForInvites(userEmail.toString(), navController)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        //verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Create Build", fontSize = 28.sp)
+    // Check permissions: if there are no audio and camera permissions, stop the user from acessing this feature.
+    val context = LocalContext.current
+    val permissionsGranted = checkPermissions(context)
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text("Title") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Campo para descrição do build
-        OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Description") },
-            modifier = Modifier.fillMaxWidth(),
-            maxLines = 5
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        UserDropdown { invitedEmail = it }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botão de envio
-        Button(
-            onClick = {
-                if (userEmail != null) {
-                    createBuild(title, description, userEmail, invitedEmail, navController)
-                }
-            },
-            enabled = title.isNotEmpty() && description.isNotEmpty() && invitedEmail.isNotEmpty()
+    if(permissionsGranted) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            //verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Create Build")
+            Text("Create Build", fontSize = 28.sp)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Title") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Campo para descrição do build
+            OutlinedTextField(
+                value = description,
+                onValueChange = { description = it },
+                label = { Text("Description") },
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 5
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            UserDropdown { invitedEmail = it }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Botão de envio
+            Button(
+                onClick = {
+                    if (userEmail != null) {
+                        createBuild(title, description, userEmail, invitedEmail, navController)
+                    }
+                },
+                enabled = title.isNotEmpty() && description.isNotEmpty() && invitedEmail.isNotEmpty()
+            ) {
+                Text("Create Build")
+            }
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            //verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Create Build", fontSize = 28.sp)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                "Please grant camera and audio permissions in order to use this feature",
+                fontSize = 18.sp
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -169,4 +200,10 @@ fun UserDropdown(selectedUser: (String) -> Unit) {
             }
         }
     }
+}
+
+private fun checkPermissions(context: Context): Boolean {
+    val cameraPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+    val audioPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
+    return cameraPermission == PackageManager.PERMISSION_GRANTED && audioPermission == PackageManager.PERMISSION_GRANTED
 }
