@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,18 +63,9 @@ fun MediaListScreen(
 
     val projectId = "utbdioxirmblbdwagasi"
     val bucketName = "build-videos"
-    //val fileName = "file_supabase" + Random.nextInt(0, 100) + ".mp4"
     val (uri, setUri) = remember { androidx.compose.runtime.mutableStateOf<Uri?>(null) }
 
 
-//
-//    if (uri == null) {
-//        downloadAndSaveVideo(projectId, bucketName, fileName, context = LocalContext.current) { downloadedUri, downloadedByteArray ->
-//            setUri(downloadedUri)
-//            alo.byteArray = downloadedByteArray  // Atualiza o byteArray com o conteúdo do vídeo
-//            Log.d("URI_CHECK2", "$downloadedUri")
-//        }
-//    }
 
     val alo: MediaFile = MediaFile(
         uri = uri,  // Mock de URI
@@ -101,14 +93,6 @@ fun MediaListScreen(
         )
     )
 
-//    // para cada step fazer o donwload do video a partir do supabase
-//    if (uri == null) {
-//        downloadAndSaveVideo(step.video, context = LocalContext.current) { downloadedUri, downloadedByteArray ->
-//            setUri(downloadedUri)
-//            alo.byteArray = downloadedByteArray  // Atualiza o byteArray com o conteúdo do vídeo
-//            Log.d("Loop", "$downloadedUri")
-//        }
-//    }
 
     val supabaseClient = remember {
         createSupabaseClient(
@@ -144,16 +128,6 @@ fun MediaListScreen(
         }
     )
 
-
-// Realize o download em segundo plano e atualize o campo byteArray depois
-//    CoroutineScope(Dispatchers.IO).launch {
-//        val videoData = bucket.downloadPublic("/content:/media/external/video/media/1000000075") // Nome real do arquivo
-//        withContext(Dispatchers.Main) {
-//            alo.byteArray = videoData // Atualize o campo quando o download terminar
-//            Log.d("DOWNLOAD", "Download concluído e byteArray atualizado!")
-//        }
-//    }
-
     val permissions = if (Build.VERSION.SDK_INT >= 33) {
         arrayOf(
             Manifest.permission.READ_MEDIA_AUDIO,
@@ -165,6 +139,7 @@ fun MediaListScreen(
     }
 
     // Request permissions if needed (you can add logic here to handle permission requests)
+
 
     Scaffold(
         modifier = modifier.fillMaxSize()
