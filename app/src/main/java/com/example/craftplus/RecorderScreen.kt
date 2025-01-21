@@ -189,7 +189,7 @@ fun uploadVideoToSupabase(
                 Log.d("RecorderScreen", "Resultados do upload ao Supabase: $results") // DEBUG
 
                 Log.d("com.example.craftplus.RecorderScreen", "Video uploaded successfully with Supabase ID: $uri")
-                saveVideoToFirestore(uri.toString(), buildId, currentStepNumber)
+                //saveVideoToFirestore(uri.toString(), buildId, currentStepNumber)
             } else {
                 Log.e("com.example.craftplus.RecorderScreen", "Failed to open InputStream for URI: $uri")
             }
@@ -200,7 +200,7 @@ fun uploadVideoToSupabase(
     }
 }
 
-fun updateSteps(buildId: String, currentStepNumber: Int, videoUri: Uri){
+fun updateSteps(buildId: String, currentStepNumber: Int, videoUri: Uri) {
     // Initialize Firestore
     val db = FirebaseFirestore.getInstance()
     // Reference to the document you want to update
@@ -227,19 +227,6 @@ fun updateSteps(buildId: String, currentStepNumber: Int, videoUri: Uri){
         }
 }
 
-// Função para atualizar o estado da build para "stopped" no Firebase
-fun updateBuildStateToStopped(buildId: String) {
-    val db = FirebaseFirestore.getInstance()
-    val buildRef = db.collection("builds").document(buildId)
-
-    buildRef.update("status", "stopped")
-        .addOnSuccessListener {
-            Log.d("com.example.craftplus.RecorderScreen", "Build state updated to 'stopped' for buildId: $buildId")
-        }
-        .addOnFailureListener { e ->
-            Log.e("com.example.craftplus.RecorderScreen", "Error updating build state: ${e.message}")
-        }
-}
 
 // Função para salvar o vídeo na Firestore com o ID do vídeo e o número do step
 fun saveVideoToFirestore(videoUri: String, buildId: String, currentStepNumber: Int) {

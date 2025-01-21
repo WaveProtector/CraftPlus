@@ -102,8 +102,7 @@ fun createBuild(title: String, description: String, userEmail: String, invitedEm
         "status" to "inviting",
         "builder" to "",
         "recorder" to "",
-        "usersJoined" to 0, // o owner vai logo para o wait
-        "videos" to arrayListOf<Map<String,String>>()
+        "usersJoined" to 0 // o owner vai logo para o wait
     ) // !! O campo videos é um array de maps que contem o stepNumber e o videoUrl !!
 
     db.collection("Builds")
