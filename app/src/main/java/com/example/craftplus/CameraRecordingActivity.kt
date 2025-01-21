@@ -88,7 +88,7 @@ class CameraRecordingActivity : ComponentActivity() {
             val preview = Preview.Builder().build()
 
             val recorder = Recorder.Builder()
-                .setQualitySelector(QualitySelector.from(Quality.HIGHEST))
+                .setQualitySelector(QualitySelector.from(Quality.LOWEST))
                 .build()
             videoCapture = VideoCapture.withOutput(recorder)
 
@@ -155,9 +155,9 @@ class CameraRecordingActivity : ComponentActivity() {
     }
 
     private fun startRecording() {
-        val fileName = "step_${buildId}_${currentStepNumber}"
+        val fileName = "build_${buildId}_step_${currentStepNumber}"
         val contentValues = ContentValues().apply {
-            put(MediaStore.Video.Media.DISPLAY_NAME, "VID_$fileName.mp4")
+            put(MediaStore.Video.Media.DISPLAY_NAME, "$fileName.mp4")
             put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
             put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/Craft+_Builds_Videos")
         }
@@ -170,6 +170,9 @@ class CameraRecordingActivity : ComponentActivity() {
                 Manifest.permission.RECORD_AUDIO
             ) != PackageManager.PERMISSION_GRANTED
         ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            Log.d("CameraRecordingActivity", "Fez return de permissões")
             return
         }
         recording = videoCapture?.output?.prepareRecording(this, outputOptions)
@@ -202,10 +205,8 @@ class CameraRecordingActivity : ComponentActivity() {
 
     companion object {
         private val REQUIRED_PERMISSIONS = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.RECORD_AUDIO // Adicionar permissão de áudio
         )
         private const val REQUEST_CODE_PERMISSIONS = 10
     }

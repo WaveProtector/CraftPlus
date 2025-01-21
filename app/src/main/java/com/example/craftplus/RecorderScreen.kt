@@ -14,7 +14,6 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.video.Recording
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -34,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import com.example.craftplus.network.StepObject
 import com.google.firebase.firestore.FieldValue
@@ -48,25 +46,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
-import java.io.File
 import java.io.InputStream
 import kotlin.random.Random
 
-fun File.getUri(context: Context): Uri? {
-    return FileProvider.getUriForFile(
-        context,
-        context.applicationContext.packageName + ".fileprovider",
-        this
-    )
-}
 
-
-// Variáveis globais para controlar o estado da gravação e do step
-private var currentRecording: Recording? = null
-private var currentBuildId: String = ""
-//private var currentStepNumber: Int = 1 // Controla o número do step
-//private var isRecording = false
-//private var isProcessingRecording = false
 @Composable
 fun RecorderScreen(
     navController: NavController,
@@ -125,6 +108,7 @@ fun RecorderScreen(
             videoUri?.let { byteArray?.let { it1 -> uploadVideoToSupabase(supabaseClient, it, it1, buildId, currentStepNumber, context) } }
             videoUri?.let { updateSteps(buildId, currentStepNumber, it) }
             currentStepNumber++
+            Log.d("Recorder", "Step Number incremented: $currentStepNumber")
             isProcessingRecording = false
             Log.d("RecorderScreen", "Video URI: $videoUri")
         }
@@ -260,13 +244,12 @@ fun updateBuildStateToStopped(buildId: String) {
 // Função para salvar o vídeo na Firestore com o ID do vídeo e o número do step
 fun saveVideoToFirestore(videoUri: String, buildId: String, currentStepNumber: Int) {
     val db = FirebaseFirestore.getInstance()
-    val buildRef = db.collection("Builds").document(buildId ?: return)
-    val videoId = videoUri
+    val buildRef = db.collection("Builds").document(buildId)
 
     // Objeto com o stepNumber e o supabaseVideoId
     val videoMap = mapOf(
         "stepNumber" to currentStepNumber,
-        "supabaseVideoId" to videoId
+        "supabaseVideoId" to videoUri
     )
 
     // Atualizar o campo 'videos' com um novo map
@@ -303,8 +286,8 @@ fun endRecordingSession(buildId: String, navController: NavController, context: 
 private suspend fun updateUsersStatus(buildId: String) {
     val db = FirebaseFirestore.getInstance()
     val buildRef = db.collection("Builds").document(buildId)
-    val ownerEmail = buildRef.get().result.get("ownerEmail")
-    val invitedEmail = buildRef.get().result.get("invitedEmail")
+    val ownerEmail = buildRef.get().await().get("ownerEmail")
+    val invitedEmail = buildRef.get().await().get("invitedEmail")
     updateUserStatus(ownerEmail.toString())
     updateUserStatus(invitedEmail.toString())
 }
