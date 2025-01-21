@@ -1,6 +1,7 @@
 package com.example.craftplus
 
 import android.net.Uri
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.fillMaxSize
@@ -133,8 +134,15 @@ fun NavGraph (navController: NavHostController) {
         composable(route = Screens.SearchFromHome.route,
             arguments = listOf(navArgument("title") { type = NavType.StringType })
         ) { backStackEntry ->
+            // Obtenha o título da navegação
             val title = backStackEntry.arguments?.getString("title")
-            if (title != null) {
+            // Verifique se o título é nulo ou vazio
+            if (title.isNullOrEmpty()) {
+                Log.d("title nav", "Title is null or empty")
+                // Se título for nulo, podemos fazer algum fallback ou exibir uma mensagem
+                // Por exemplo, você pode navegar para uma tela de erro ou exibir uma UI alternativa
+            } else {
+                // Caso contrário, continue com a navegação normal
                 MediaListScreen(
                     navController = navController,
                     title = title,
@@ -146,15 +154,17 @@ fun NavGraph (navController: NavHostController) {
             }
         }
 
+
         composable(route = Screens.Settings.route) {
             // TODO
-            VideoScreen()
+           //VideoScreen()
         }
 
         composable(route = Screens.Search.route) {
+            Log.d("nav graph", "nada")
             MediaListScreen(
                 navController = navController,
-                title = "",
+                title = "Castelo",
                 modifier = Modifier
                     .fillMaxSize()
                     .wrapContentSize(Alignment.Center),
@@ -166,46 +176,46 @@ fun NavGraph (navController: NavHostController) {
 
 
 }
-//TODO TIRAR DAQUI
-@Composable
-fun VideoScreen() {
-    val videoUri = Uri.parse("/storage/emulated/0/Movies/Craft+_Builds_Videos/file_supabase13.mp4")
-    VideoPlayer(videoUri = videoUri, modifier = Modifier.fillMaxSize())
-}
-
-@Composable
-fun VideoPlayer(
-    videoUri: Uri,
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-
-    // Initialize ExoPlayer
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-            setMediaItem(MediaItem.fromUri(videoUri))
-            prepare()
-        }
-    }
-
-    // Dispose of the ExoPlayer when the composable is removed
-    AndroidView(
-        modifier = modifier,
-        factory = {
-            PlayerView(context).apply {
-                player = exoPlayer
-                layoutParams = FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-            }
-        }
-    )
-    DisposableEffect(
-        Unit
-    ) {
-        onDispose {
-            exoPlayer.release()
-        }
-    }
-}
+////TODO TIRAR DAQUI
+//@Composable
+//fun VideoScreen() {
+//    val videoUri = Uri.parse("/storage/emulated/0/Movies/Craft+_Builds_Videos/file_supabase13.mp4")
+//    VideoPlayer(videoUri = videoUri, modifier = Modifier.fillMaxSize())
+//}
+//
+//@Composable
+//fun VideoPlayer(
+//    videoUri: Uri,
+//    modifier: Modifier = Modifier
+//) {
+//    val context = LocalContext.current
+//
+//    // Initialize ExoPlayer
+//    val exoPlayer = remember {
+//        ExoPlayer.Builder(context).build().apply {
+//            setMediaItem(MediaItem.fromUri(videoUri))
+//            prepare()
+//        }
+//    }
+//
+//    // Dispose of the ExoPlayer when the composable is removed
+//    AndroidView(
+//        modifier = modifier,
+//        factory = {
+//            PlayerView(context).apply {
+//                player = exoPlayer
+//                layoutParams = FrameLayout.LayoutParams(
+//                    ViewGroup.LayoutParams.MATCH_PARENT,
+//                    ViewGroup.LayoutParams.MATCH_PARENT
+//                )
+//            }
+//        }
+//    )
+//    DisposableEffect(
+//        Unit
+//    ) {
+//        onDispose {
+//            exoPlayer.release()
+//        }
+//    }
+//}

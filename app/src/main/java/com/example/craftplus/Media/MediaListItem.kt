@@ -46,9 +46,6 @@ fun MediaListItem(
     modifier: Modifier = Modifier,
     step: StepObject?
 ) {
-    //val mockBuild = getMockBuild()
-
-    //var fileUri by remember { mutableStateOf<Uri> }
 
     val context = LocalContext.current
     var thumbnail: Bitmap? by remember { mutableStateOf(null) }
@@ -58,7 +55,7 @@ fun MediaListItem(
     var duration: Long? by remember { mutableStateOf(null) }
 
 
-    LaunchedEffect(file.uri, uriGenerated) {
+    LaunchedEffect(file.uri) {
         if (file.uri != null && !uriGenerated) {
             thumbnail = generateVideoThumbnail(file.uri, context)
             duration = getVideoDuration(file.uri, context)

@@ -89,7 +89,7 @@ fun Home(navController: NavController, modifier: Modifier = Modifier) {
         Text("Have a build in mind?", fontSize = 26.sp)
         BuildDropdown { selectedBuild ->
             //navController.navigate("search")
-            navController.navigate(Screens.Search.route.replace("{title}", selectedBuild))
+            navController.navigate(Screens.SearchFromHome.route.replace("{title}", selectedBuild))
             Log.d("SelectedBuild", "Usuário selecionou: $selectedBuild")
             // Aqui você pode navegar para outra tela ou carregar detalhes da build
         }
