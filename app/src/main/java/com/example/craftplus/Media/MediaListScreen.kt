@@ -248,7 +248,7 @@ fun downloadAndSaveVideo(
 
                 // Define the directory and file where the video will be saved
                 val moviesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
-                val videoDir = File(moviesDir, "CraftPlus_Builds_Videos")
+                val videoDir = File(moviesDir, "Craft+_Builds_Videos")
 
                 // Ensure the directory exists
                 if (!videoDir.exists() && !videoDir.mkdirs()) {
