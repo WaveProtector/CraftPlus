@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
                     ),
                     BottomNavigationItem(
                         //Alterar
-                        title = Screens.Home.route,
+                        title = Screens.Settings.route,
                         selectedIcon = Icons.Filled.Settings,
                         unselectedIcon = Icons.Outlined.Settings,
                         hasNews = true,
