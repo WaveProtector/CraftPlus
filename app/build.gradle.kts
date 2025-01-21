@@ -122,4 +122,7 @@ dependencies {
 
     // Necessário para o supabase
     implementation("io.ktor:ktor-client-android:3.0.0-rc-1")
+
+    implementation("androidx.media3:media3-exoplayer:1.1.0")
+    implementation("androidx.media3:media3-ui:1.1.0")
 }
