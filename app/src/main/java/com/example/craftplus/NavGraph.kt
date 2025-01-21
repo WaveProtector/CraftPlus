@@ -161,7 +161,6 @@ fun NavGraph (navController: NavHostController) {
         }
 
         composable(route = Screens.Search.route) {
-            Log.d("nav graph", "nada")
             MediaListScreen(
                 navController = navController,
                 title = "Castelo",

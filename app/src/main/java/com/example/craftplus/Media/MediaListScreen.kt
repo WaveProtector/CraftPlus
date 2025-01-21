@@ -47,7 +47,7 @@ fun MediaListScreen(
 
         //Caso seja clicado na lupa, faz random
         if (title.equals("Castelo")) {
-            build = builds?.random()
+            build = builds?.firstOrNull()
         }
 
         val steps: List<StepObject>? = build?.steps;
@@ -56,7 +56,7 @@ fun MediaListScreen(
     Scaffold(
         modifier = modifier.fillMaxSize()
     ) { innerPadding ->
-        TopBar(navController, if (build?.title != null) build!!.title else "Castelo")
+        TopBar(navController, if (build?.title != null) build.title else "Castelo")
 
         LazyColumn(
             modifier = Modifier
