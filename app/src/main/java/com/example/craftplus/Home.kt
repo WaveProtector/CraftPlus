@@ -11,12 +11,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -81,19 +87,12 @@ fun Home(navController: NavController, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(110.dp))
 
         Text("Have a build in mind?", fontSize = 26.sp)
-        // Search bar
-        OutlinedTextField(
-            value = searchQuery.value,
-            onValueChange = { newText -> searchQuery.value = newText },
-            label = { Text("Search for builds...") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            singleLine = true,
-            textStyle = androidx.compose.ui.text.TextStyle(textAlign = TextAlign.Start)
-        )
+        BuildDropdown { selectedBuild ->
+            Log.d("SelectedBuild", "Usuário selecionou: $selectedBuild")
+            // Aqui você pode navegar para outra tela ou carregar detalhes da build
+        }
 
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(50.dp))
 
         Text("Builds in progress", fontSize = 26.sp)
         // TODO -> Não é muito importante implementar esta parte tho, isto é mais um "tracker de builds"
@@ -140,5 +139,60 @@ private fun logout(navController: NavController) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BuildDropdown(onBuildSelected: (String) -> Unit) {
+    val db = FirebaseFirestore.getInstance()
+    var expanded by remember { mutableStateOf(false) }
+    var builds by remember { mutableStateOf(listOf<String>()) }
+    var filteredBuilds by remember { mutableStateOf(listOf<String>()) }
+    var searchQuery by remember { mutableStateOf("") }
 
+    // Carrega builds do Firestore
+    LaunchedEffect(Unit) {
+        db.collection("Builds")
+            .get()
+            .addOnSuccessListener { documents ->
+                val fetchedBuilds = documents
+                    .map { it.getString("title") ?: "" }
+                    .filter { it.isNotEmpty() } // Garante que o título não está vazio
+                builds = fetchedBuilds
+                filteredBuilds = fetchedBuilds
+            }
+            .addOnFailureListener { Log.e("Firestore", "Error fetching builds", it) }
+    }
 
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { newValue ->
+                searchQuery = newValue
+                expanded = true // Mostra o dropdown ao começar a digitar
+            },
+            label = { Text("Search for builds...") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+            modifier = Modifier.menuAnchor()
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            filteredBuilds.forEach { buildTitle ->
+                DropdownMenuItem(
+                    onClick = {
+                        searchQuery = buildTitle // Atualiza o campo com a build selecionada
+                        onBuildSelected(buildTitle)
+                        Log.d("onBuildSelected", buildTitle)
+                        expanded = false
+                    },
+                    text = { Text(buildTitle) }
+                )
+            }
+        }
+    }
+}
