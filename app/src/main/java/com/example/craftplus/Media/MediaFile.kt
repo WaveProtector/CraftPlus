@@ -4,8 +4,9 @@ import android.net.Uri
 import com.example.craftplus.network.BuildObject
 
 data class MediaFile(
-    val uri: Uri,
+    var uri: Uri?,
+    var byteArray: ByteArray?,
     val name: String,
     val type: MediaType,
-    val buildValues: BuildObject
+    val build: BuildObject
 )

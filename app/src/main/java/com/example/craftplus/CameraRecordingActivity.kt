@@ -170,8 +170,6 @@ class CameraRecordingActivity : ComponentActivity() {
                 Manifest.permission.RECORD_AUDIO
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
             return
         }
         recording = videoCapture?.output?.prepareRecording(this, outputOptions)
@@ -204,8 +202,10 @@ class CameraRecordingActivity : ComponentActivity() {
 
     companion object {
         private val REQUIRED_PERMISSIONS = arrayOf(
-            android.Manifest.permission.CAMERA,
-            android.Manifest.permission.RECORD_AUDIO // Adicionar permissão de áudio
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
         private const val REQUEST_CODE_PERMISSIONS = 10
     }

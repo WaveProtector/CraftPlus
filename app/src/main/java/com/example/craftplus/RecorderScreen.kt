@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.net.http.HttpResponseCache.install
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.navigation.NavController
+import com.example.craftplus.network.StepObject
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import io.github.jan.supabase.SupabaseClient
@@ -48,6 +50,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import java.io.File
 import java.io.InputStream
+import kotlin.random.Random
 
 fun File.getUri(context: Context): Uri? {
     return FileProvider.getUriForFile(
@@ -120,6 +123,7 @@ fun RecorderScreen(
             // Processar o URI do vídeo aqui i.e. meter o vídeo no supabase e depois no firebase; Incrementar o step e continuar.
             val byteArray = videoUri?.let { getByteArrayFromUri(context.contentResolver, it) }
             videoUri?.let { byteArray?.let { it1 -> uploadVideoToSupabase(supabaseClient, it, it1, buildId, currentStepNumber, context) } }
+            videoUri?.let { updateSteps(buildId, currentStepNumber, it) }
             currentStepNumber++
             isProcessingRecording = false
             Log.d("RecorderScreen", "Video URI: $videoUri")
@@ -210,6 +214,47 @@ fun uploadVideoToSupabase(
             Log.e("com.example.craftplus.RecorderScreen", "Error uploading video: ${e.message}", e)
         }
     }
+}
+
+fun updateSteps(buildId: String, currentStepNumber: Int, videoUri: Uri){
+    // Initialize Firestore
+    val db = FirebaseFirestore.getInstance()
+    // Reference to the document you want to update
+    val documentRef = db.collection("Builds").document(buildId)
+    // Create a new StepObject to add
+    val newStep = hashMapOf(
+        "numStep" to currentStepNumber,
+        "video" to videoUri,
+        "blocks" to listOf(
+            hashMapOf("type" to "wood", "quantity" to Random.nextInt(10,251)),
+            hashMapOf("type" to "stone", "quantity" to Random.nextInt(50,121))
+        )
+    )
+
+    // Update the 'steps' array field by adding the new StepObject
+    documentRef.update("steps", FieldValue.arrayUnion(newStep))
+        .addOnSuccessListener {
+            // Successfully added the new step
+            println("New step added to BuildObject successfully.")
+        }
+        .addOnFailureListener { e ->
+            // Failed to add the new step
+            println("Error adding new step: $e")
+        }
+}
+
+// Função para atualizar o estado da build para "stopped" no Firebase
+fun updateBuildStateToStopped(buildId: String) {
+    val db = FirebaseFirestore.getInstance()
+    val buildRef = db.collection("builds").document(buildId)
+
+    buildRef.update("status", "stopped")
+        .addOnSuccessListener {
+            Log.d("com.example.craftplus.RecorderScreen", "Build state updated to 'stopped' for buildId: $buildId")
+        }
+        .addOnFailureListener { e ->
+            Log.e("com.example.craftplus.RecorderScreen", "Error updating build state: ${e.message}")
+        }
 }
 
 // Função para salvar o vídeo na Firestore com o ID do vídeo e o número do step

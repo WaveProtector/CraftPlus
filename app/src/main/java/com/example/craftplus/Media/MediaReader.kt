@@ -75,6 +75,7 @@ class MediaReader(
                         mediaFiles.add(
                             MediaFile(
                                 uri = contentUri,
+                                byteArray = byteArrayOf(1, 2, 3, 4, 5),
                                 name = name,
                                 type = mediaType,
                                 BuildObject()
