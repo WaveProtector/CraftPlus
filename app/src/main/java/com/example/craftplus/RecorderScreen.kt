@@ -47,6 +47,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.InputStream
+import kotlin.random.Random
 
 fun File.getUri(context: Context): Uri? {
     return FileProvider.getUriForFile(
@@ -225,8 +226,8 @@ fun updateSteps(buildId: String, currentStepNumber: Int, videoUri: Uri){
         "numStep" to currentStepNumber,
         "video" to videoUri,
         "blocks" to listOf(
-            hashMapOf("type" to "wood", "quantity" to 10),
-            hashMapOf("type" to "stone", "quantity" to 5)
+            hashMapOf("type" to "wood", "quantity" to Random.nextInt(10,251)),
+            hashMapOf("type" to "stone", "quantity" to Random.nextInt(50,121))
         )
     )
 

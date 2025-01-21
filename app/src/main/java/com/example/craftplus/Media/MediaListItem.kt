@@ -3,6 +3,7 @@ package com.example.craftplus.Media
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,23 +33,38 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.craftplus.R
-import com.example.craftplus.network.BuildObject
+import com.example.craftplus.TopBar
 import com.example.craftplus.network.StepObject
 
-val count = 0;
 
 @Composable
 fun MediaListItem(
     file: MediaFile,
+    navController: NavController,
     modifier: Modifier = Modifier,
     step: StepObject?
 ) {
     //val mockBuild = getMockBuild()
 
+    //var fileUri by remember { mutableStateOf<Uri> }
+
     val context = LocalContext.current
-    val thumbnail = generateVideoThumbnail(file.uri, context)
-    val duration = getVideoDuration(file.uri, context)
+    var thumbnail: Bitmap? by remember { mutableStateOf(null) }
+    var uriGenerated: Boolean = false
+
+    //val thumbnail = generateVideoThumbnail(file.uri, context)
+    var duration: Long? by remember { mutableStateOf(null) }
+
+
+    LaunchedEffect(file.uri, uriGenerated) {
+        if (file.uri != null && !uriGenerated) {
+            thumbnail = generateVideoThumbnail(file.uri, context)
+            duration = getVideoDuration(file.uri, context)
+            uriGenerated = true
+        }
+    }
 
     Card(
         modifier = modifier
@@ -62,7 +83,7 @@ fun MediaListItem(
                 MediaType.VIDEO -> {
                     if (thumbnail != null) {
                         Image(
-                            bitmap = thumbnail.asImageBitmap(),
+                            bitmap = thumbnail!!.asImageBitmap(),
                             contentDescription = null,
                             modifier = Modifier
                                 .width(100.dp)
@@ -91,7 +112,7 @@ fun MediaListItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Step number: ${step?.numStep}",
+                    text = "Step: ${step?.numStep}",
                     color = Color.White, // Cor do texto
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,
@@ -99,7 +120,7 @@ fun MediaListItem(
                     )
                 )
                 Text(
-                    text = "Blocks used: ${step?.blocks?.sumOf { it.amount } ?: 0}",
+                    text = "Block: ${step?.blocks?.sumOf { it.amount } ?: 0}",
                     color = Color.White,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,
@@ -122,7 +143,7 @@ fun MediaListItem(
     }
 }
 
-fun generateVideoThumbnail(videoUri: android.net.Uri, context: Context): Bitmap? {
+fun generateVideoThumbnail(videoUri: Uri?, context: Context): Bitmap? {
     val retriever = MediaMetadataRetriever()
     return try {
         retriever.setDataSource(context, videoUri)
@@ -135,7 +156,7 @@ fun generateVideoThumbnail(videoUri: android.net.Uri, context: Context): Bitmap?
     }
 }
 
-fun getVideoDuration(videoUri: android.net.Uri, context: Context): Long? {
+fun getVideoDuration(videoUri: Uri?, context: Context): Long? {
     val retriever = MediaMetadataRetriever()
     return try {
         retriever.setDataSource(context, videoUri)
