@@ -120,7 +120,7 @@ fun MediaListItem(
                     )
                 )
                 Text(
-                    text = "Block: ${step?.blocks?.sumOf { it.amount } ?: 0}",
+                    text = "Block: ${step?.blocks?.sumOf { it.quantity } ?: 0}",
                     color = Color.White,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,

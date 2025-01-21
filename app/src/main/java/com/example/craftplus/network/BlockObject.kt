@@ -6,6 +6,6 @@ data class BlockObject(
     //var id: String = "",
     @SerialName(value = "type")
     var type: String = "",
-    @SerialName(value = "amount")
-    var amount: Int = 0,
+    @SerialName(value = "quantity")
+    var quantity: Int = 0,
 )

@@ -94,7 +94,7 @@ fun MediaListScreen(
                     numStep = 1,
                     video = "",
                     blocks = listOf(
-                        BlockObject(type = "stone", amount = 5)
+                        BlockObject(type = "stone", quantity = 5)
                     )
                 )
             )
