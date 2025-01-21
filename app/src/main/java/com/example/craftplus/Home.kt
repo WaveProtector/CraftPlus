@@ -162,6 +162,15 @@ fun BuildDropdown(onBuildSelected: (String) -> Unit) {
             .addOnFailureListener { Log.e("Firestore", "Error fetching builds", it) }
     }
 
+    // Filtra as builds de acordo com o texto inserido
+    LaunchedEffect(searchQuery) {
+        filteredBuilds = if (searchQuery.isEmpty()) {
+            builds
+        } else {
+            builds.filter { it.contains(searchQuery, ignoreCase = true) }
+        }
+    }
+
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
