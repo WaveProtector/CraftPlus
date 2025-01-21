@@ -117,7 +117,7 @@ private fun logout(navController: NavController) {
     currentUser?.let { user ->
         // Atualiza o status de 'online' para 'false' no Firestore
         db.collection("Users").document(user.uid)
-            .update("online", false)
+            .update("status", "offline")
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // Logout do FirebaseAuth

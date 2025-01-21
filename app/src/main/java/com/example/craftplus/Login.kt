@@ -1,7 +1,6 @@
 package com.example.craftplus
 
 import android.content.Context
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +23,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.test.core.app.ApplicationProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -84,9 +82,9 @@ private fun loginUser(email: String, password: String, navController: NavControl
                 if (task.isSuccessful) {
                     val userId = FirebaseAuth.getInstance().currentUser?.uid
                     if (userId != null) {
-                        // Atualizar o status "online" para true no Firestore
+                        // Atualizar o status para "online" no Firestore
                         val db = FirebaseFirestore.getInstance()
-                        db.collection("Users").document(userId).update("online", true)
+                        db.collection("Users").document(userId).update("status", "online")
                             .addOnCompleteListener { updateTask ->
                                 if (updateTask.isSuccessful) {
                                     Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
@@ -96,7 +94,7 @@ private fun loginUser(email: String, password: String, navController: NavControl
                                 } else {
                                     Toast.makeText(
                                         context,
-                                        "Failed to update online status: ${updateTask.exception?.message}",
+                                        "Failed to update status: ${updateTask.exception?.message}",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }

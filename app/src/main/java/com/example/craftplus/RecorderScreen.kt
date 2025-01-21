@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
@@ -43,6 +44,8 @@ import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import java.io.File
 import java.io.InputStream
 
@@ -138,7 +141,7 @@ fun RecorderScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(onClick = {
-            // TODO -> Vai para home enquanto o builder vai para um ecrã para editar os steps e colocar-se os blocos e descrições -> depois o builder vai para o home
+            endRecordingSession(buildId, navController, context)
         }, enabled = (!isProcessingRecording)) {
             Text("End Build Session")
         }
@@ -197,10 +200,7 @@ fun uploadVideoToSupabase(
                 }
                 Log.d("RecorderScreen", "Resultados do upload ao Supabase: $results") // DEBUG
 
-                // TODO -> Ver como se comporta não deve retornar id...
-                // Supondo que o Supabase retorna um ID único para o vídeo
-                val supabaseVideoId = "supabaseVideoIdHere" // Substitua com o ID retornado
-                Log.d("com.example.craftplus.RecorderScreen", "Video uploaded successfully with Supabase ID: $supabaseVideoId")
+                Log.d("com.example.craftplus.RecorderScreen", "Video uploaded successfully with Supabase ID: $uri")
                 saveVideoToFirestore(uri.toString(), buildId, currentStepNumber)
             } else {
                 Log.e("com.example.craftplus.RecorderScreen", "Failed to open InputStream for URI: $uri")
@@ -234,3 +234,47 @@ fun saveVideoToFirestore(videoUri: String, buildId: String, currentStepNumber: I
         }
 }
 
+// Altera status da build para "completed" e vai para o home screen
+fun endRecordingSession(buildId: String, navController: NavController, context: Context) {
+    val db = FirebaseFirestore.getInstance()
+    val buildRef = db.collection("Builds").document(buildId)
+
+    buildRef.update("status", "completed")
+        .addOnSuccessListener {
+            Log.d("com.example.craftplus.RecorderScreen", "Build state updated to 'completed' for buildId: $buildId")
+            runBlocking {
+                updateUsersStatus(buildId)
+            }
+            Toast.makeText(context, "Build finished with success!", Toast.LENGTH_SHORT).show()
+            navController.navigate(Screens.Home.route)
+        }
+        .addOnFailureListener { e ->
+            Log.e("com.example.craftplus.RecorderScreen", "Error updating build state: ${e.message}")
+            Toast.makeText(context, "Error finishing build!", Toast.LENGTH_SHORT).show()
+            navController.navigate(Screens.Home.route)
+        }
+}
+
+private suspend fun updateUsersStatus(buildId: String) {
+    val db = FirebaseFirestore.getInstance()
+    val buildRef = db.collection("Builds").document(buildId)
+    val ownerEmail = buildRef.get().result.get("ownerEmail")
+    val invitedEmail = buildRef.get().result.get("invitedEmail")
+    updateUserStatus(ownerEmail.toString())
+    updateUserStatus(invitedEmail.toString())
+}
+
+private suspend fun updateUserStatus(userEmail: String) {
+    val db = FirebaseFirestore.getInstance()
+    val querySnapshot = db.collection("Users").whereEqualTo("email", userEmail).get().await()
+    if (!querySnapshot.isEmpty) {
+        // Obtém o primeiro documento correspondente
+        val document = querySnapshot.documents[0]
+        val userId = document.id
+
+        // Atualiza o status do usuário para "busy"
+        db.collection("Users").document(userId).update("status", "online").await()
+
+        println("Status atualizado com sucesso para: online")
+    }
+}

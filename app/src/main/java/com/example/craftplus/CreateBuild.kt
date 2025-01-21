@@ -129,7 +129,7 @@ fun UserDropdown(selectedUser: (String) -> Unit) {
     LaunchedEffect(Unit) {
         // Busca os usuários online
         db.collection("Users")
-            .whereEqualTo("online", true)
+            .whereEqualTo("status", "online")
             .get()
             .addOnSuccessListener { documents ->
                 val fetchedUsers = documents

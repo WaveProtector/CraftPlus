@@ -117,7 +117,7 @@ private fun registerUser(username: String, email: String, pwd: String, confirmPw
                         val userMap = mapOf(
                             "email" to email,
                             "username" to username,
-                            "online" to true // user fica online logo após o register!
+                            "status" to "online" // user fica online logo após o register!
                         )
 
                         // Salvar dados do user na Firestore
