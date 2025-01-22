@@ -75,7 +75,6 @@ fun NavGraph (navController: NavHostController) {
             }
         }
 
-
         composable( route = Screens.ChooseRoles.route,
             arguments = listOf(navArgument("buildId") { type = NavType.StringType })
         ) { backStackEntry ->
@@ -143,13 +142,12 @@ fun NavGraph (navController: NavHostController) {
                 )
             }
         }
-
-
         composable(route = Screens.Settings.route) {
             // TODO
+            StatusToggleButton(auth.currentUser?.uid.toString())
            //VideoScreen()
-        }
 
+        }
         composable(route = Screens.Search.route) {
             MediaListScreen(
                 navController = navController,
@@ -160,10 +158,7 @@ fun NavGraph (navController: NavHostController) {
                 buildViewModel = viewModel { BuildViewModel(RepositoryProvider.firestoreRepository) }
             )
         }
-
     }
-
-
 }
 ////TODO TIRAR DAQUI
 //@Composable
