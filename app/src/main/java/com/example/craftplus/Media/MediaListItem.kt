@@ -43,7 +43,7 @@ import com.example.craftplus.network.StepObject
 @Composable
 fun MediaListItem(
     file: MediaFile,
-    buildId: String,
+    buildTitle: String,
     navController: NavController,
     modifier: Modifier = Modifier,
     step: StepObject?
@@ -54,7 +54,6 @@ fun MediaListItem(
     var uriGenerated = false
 
     var duration: Long? by remember { mutableStateOf(null) }
-
 
     LaunchedEffect(file.uri) {
         if (file.uri != null && !uriGenerated) {
@@ -142,7 +141,7 @@ fun MediaListItem(
                     Button(onClick = {
                         val stepNumber = step?.numStep?.toString() ?: "1"
                         val route = Screens.StepDetails.route
-                            .replace("{buildId}", buildId)
+                            .replace("{buildTitle}", buildTitle)
                             .replace("{step}", stepNumber)
                             .replace("{uri}", encodedUri.toString())
                         navController.navigate(route)

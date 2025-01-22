@@ -162,34 +162,35 @@ fun NavGraph (navController: NavHostController) {
         composable(
             route = Screens.StepDetails.route,
             arguments = listOf(
-                navArgument("buildId") { type = NavType.StringType },
+                navArgument("buildTitle") { type = NavType.StringType },
                 navArgument("step") { type = NavType.IntType },
                 navArgument("uri") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             // Obtenha os argumentos da navegação
-            val buildId = backStackEntry.arguments?.getString("buildId")
+            val buildTitle = backStackEntry.arguments?.getString("buildTitle")
             val step = backStackEntry.arguments?.getInt("step")
             val uri = backStackEntry.arguments?.getString("uri")
 
-            Log.d("StepDetails", "Build ID: $buildId, Step Number: $step, Uri: $uri")
+            Log.d("StepDetails", "Build ID: $buildTitle, Step Number: $step, Uri: $uri")
 
             // Verifique se os argumentos não são nulos
-            if (buildId.isNullOrEmpty() || step == null || uri.isNullOrEmpty()) {
-                Log.d("StepDetails", "Invalid arguments: buildId or step or uri is null/empty")
+            if (buildTitle.isNullOrEmpty() || step == null || uri.isNullOrEmpty()) {
+                Log.d("StepDetails", "Invalid arguments: buildTitle or step or uri is null/empty")
             } else {
-                Log.d("StepDetails", "Build ID: $buildId, Step Number: $step, Uri: $uri")
+                Log.d("StepDetails", "Build ID: $buildTitle, Step Number: $step, Uri: $uri")
 
 
                 // Exiba a tela com os dados fornecidos
                 StepDetailsScreen(
                     navController = navController,
-                    buildId = buildId,
+                    buildTitle = buildTitle,
                     step = step,
                     uri = uri,
                     modifier = Modifier
                         .fillMaxSize()
-                        .wrapContentSize(Alignment.Center)
+                        .wrapContentSize(Alignment.Center),
+                    buildViewModel = viewModel { BuildViewModel(RepositoryProvider.firestoreRepository) }
                 )
             }
         }

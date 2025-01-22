@@ -107,6 +107,7 @@ class FirestoreRepository(private val firestore: FirebaseFirestore) {
             }
         } catch (e: Exception) {
             Log.e("getBuilds", "Error fetching build objects", e)
+            Log.d("erro Firebase Repo", "Error fetching build objects", e)
             // Log the exception or handle it as needed
             emptyList()
         }

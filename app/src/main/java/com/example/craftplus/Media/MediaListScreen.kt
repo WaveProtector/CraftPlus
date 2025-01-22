@@ -99,7 +99,7 @@ fun MediaListScreen(
                     file?.let { mediaFile ->
                         MediaListItem(
                             file = mediaFile,
-                            buildId = build!!.id,
+                            buildTitle = build!!.title,
                             navController = navController,
                             modifier = Modifier.fillMaxWidth(),
                             step = step
