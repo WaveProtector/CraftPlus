@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,9 +51,6 @@ import com.example.craftplus.network.BlockObject
 import com.example.craftplus.network.BuildObject
 import com.example.craftplus.network.BuildViewModel
 import com.example.craftplus.network.StepObject
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
@@ -80,7 +78,11 @@ fun StepDetailsScreen(navController: NavController, buildTitle: String, step: In
     Log.d("steps", steps.toString())
 
     val stepObj = steps?.get(step - 1)
-    Log.d("stepObj", "${stepObj}")
+    //val nextStepObj = steps?.get(step)
+    //val alo = nextStepObj.
+
+//    Log.d("stepObj", "${stepObj}")
+//    Log.d("nextStepObj", "${nextStepObj}")
 
     // Initialize ExoPlayer
     val exoPlayer = remember {
@@ -97,6 +99,20 @@ fun StepDetailsScreen(navController: NavController, buildTitle: String, step: In
         verticalArrangement = Arrangement.Center
     ) {
         TopBar(navController, "Step: " + step.toString())
+
+//        if (nextStepObj != null) {
+//            Button(onClick = {
+//                val stepNumber = (step + 1).toString()
+//                val route = Screens.StepDetails.route
+//                    .replace("{buildTitle}", buildTitle)
+//                    .replace("{step}", stepNumber)
+//                    .replace("{uri}", encodedUri.toString())
+//                navController.navigate(route)
+//            }) {
+//                Text(text = "Next")//MAISS
+//            }
+//        }
+
         // Dispose of the ExoPlayer when the composable is removed
         AndroidView(
             modifier = Modifier
@@ -151,7 +167,7 @@ fun BlockItem(block: BlockObject) {
                     "stone" to R.drawable.steve_pfp
                 )
 
-                val imageResource = blockImageMap[block.type] ?: R.drawable.video
+                val imageResource = blockImageMap[block.type] ?: R.drawable.steve_pfp
 
                 Image(
                     painter = painterResource(id = imageResource),

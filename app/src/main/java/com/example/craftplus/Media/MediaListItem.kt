@@ -125,7 +125,7 @@ fun MediaListItem(
                     )
                 )
 
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(60.dp))
 
                 Row {
                     Text(
@@ -136,21 +136,39 @@ fun MediaListItem(
                             fontSize = 18.sp // Tamanho maior da fonte para a duração
                         )
                     )
-                    val encodedUri = Uri.encode(file.uri.toString())
-
-                    Button(onClick = {
-                        val stepNumber = step?.numStep?.toString() ?: "1"
-                        val route = Screens.StepDetails.route
-                            .replace("{buildTitle}", buildTitle)
-                            .replace("{step}", stepNumber)
-                            .replace("{uri}", encodedUri.toString())
-                        navController.navigate(route)
-                    }) {
-                        Text(text = "Details")
-                    }
+//                    val encodedUri = Uri.encode(file.uri.toString())
+//
+//                    Button(onClick = {
+//                        val stepNumber = step?.numStep?.toString() ?: "1"
+//                        val route = Screens.StepDetails.route
+//                            .replace("{buildTitle}", buildTitle)
+//                            .replace("{step}", stepNumber)
+//                            .replace("{uri}", encodedUri.toString())
+//                        navController.navigate(route)
+//                    }) {
+//                        Text(text = "Details")
+//                    }
                 }
 
             }
+
+            Column (
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(end = 41.dp)
+            ){
+                val encodedUri = Uri.encode(file.uri.toString())
+
+                Button(onClick = {
+                    val stepNumber = step?.numStep?.toString() ?: "1"
+                    val route = Screens.StepDetails.route
+                        .replace("{buildTitle}", buildTitle)
+                        .replace("{step}", stepNumber)
+                        .replace("{uri}", encodedUri.toString())
+                    navController.navigate(route)
+                }) {
+                    Text(text = "Details")
+                } }
         }
     }
 }

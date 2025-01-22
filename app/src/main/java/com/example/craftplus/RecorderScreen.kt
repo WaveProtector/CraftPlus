@@ -50,32 +50,33 @@ import java.io.InputStream
 import kotlin.random.Random
 
 val commonBlocks = listOf(
-    "Stone",
-    "Dirt",
-    "Grass Block",
-    "Cobblestone",
-    "Sand",
-    "Gravel",
-    "Oak Log",
-    "Spruce Log",
-    "Birch Log",
-    "Jungle Log",
-    "Acacia Log",
-    "Dark Oak Log",
-    "Oak Planks",
-    "Spruce Planks",
-    "Birch Planks",
-    "Jungle Planks",
-    "Acacia Planks",
-    "Dark Oak Planks",
-    "Coal Ore",
-    "Iron Ore",
-    "Gold Ore",
-    "Diamond Ore",
-    "Redstone Ore",
-    "Lapis Lazuli Ore",
-    "Emerald Ore"
+        "stone",
+        "dirt",
+        "grass_block",
+        "cobblestone",
+        "sand",
+        "gravel",
+        "oak_log",
+        "spruce_log",
+        "birch_log",
+        "jungle_log",
+        "acacia_log",
+        "dark_oak_log",
+        "oak_planks",
+        "spruce_planks",
+        "birch_planks",
+        "jungle_planks",
+        "acacia_planks",
+        "dark_oak_planks",
+        "coal_ore",
+        "iron_ore",
+        "gold_ore",
+        "diamond_ore",
+        "redstone_ore",
+        "lapis_lazuli_ore",
+        "emerald_ore"
 )
+
 
 @Composable
 fun RecorderScreen(
