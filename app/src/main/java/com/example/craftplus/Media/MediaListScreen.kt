@@ -44,15 +44,15 @@ fun MediaListScreen(
     buildViewModel: BuildViewModel
 ) {
 
-        val builds: List<BuildObject>? = buildViewModel.getBuildObjects();
-        var build: BuildObject? = builds?.find { it.title.equals(title, ignoreCase = true) }
+    val builds: List<BuildObject>? = buildViewModel.getBuildObjects();
+    var build: BuildObject? = builds?.find { it.title.equals(title, ignoreCase = true) }
 
-        //Caso seja clicado na lupa, faz random
-        if (title.equals("Castelo")) {
-            build = builds?.firstOrNull()
-        }
+    //Caso seja clicado na lupa, faz random
+    if (title.equals("Castelo")) {
+        build = builds?.firstOrNull()
+    }
 
-        val steps: List<StepObject>? = build?.steps;
+    val steps: List<StepObject>? = build?.steps;
 
 
     Scaffold(
@@ -99,6 +99,7 @@ fun MediaListScreen(
                     file?.let { mediaFile ->
                         MediaListItem(
                             file = mediaFile,
+                            buildId = build!!.id,
                             navController = navController,
                             modifier = Modifier.fillMaxWidth(),
                             step = step
@@ -121,7 +122,7 @@ fun downloadAndSaveVideo(
     CoroutineScope(Dispatchers.IO).launch {
         // Construct the public URL
         val fileUrl = "https://utbdioxirmblbdwagasi.supabase.co/storage/v1/object/public/build-videos/" + fileName
-       // Log.d("Url", "url eh: " + fileUrl)
+        // Log.d("Url", "url eh: " + fileUrl)
         // Initialize OkHttpClient
         val client = OkHttpClient()
 
@@ -176,11 +177,6 @@ fun downloadAndSaveVideo(
                 } catch (e: IOException) {
                     Log.e("DOWNLOAD", "Failed to save video to Media Store: ${e.message}")
                 }
-
-                //val uriDownload = uri
-                //withContext(Dispatchers.Main) { onUriReady(uriDownload) }
-                //Log.d("DOWNLOAD", "Video saved successfully at: ${uri}")
-                //withContext(Dispatchers.Main) { onUriReady(uriDownload) }
             }
         } catch (e: IOException) {
             Log.e("DOWNLOAD", "Error during download or save: ${e.message}")
