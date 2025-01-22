@@ -7,7 +7,7 @@ sealed class Screens(val route: String) {
     object Builds: Screens("Build")
     object Search: Screens("search")
     object Settings: Screens("settings")
-//    object Materials: Screens("materials")
+    //    object Materials: Screens("materials")
 //    object Profile: Screens("profile")
 //    object Friends: Screens("friends")
 //    object Camera: Screens("camera")
@@ -17,4 +17,5 @@ sealed class Screens(val route: String) {
     object Builder: Screens("builder/{buildId}")
     object Recorder: Screens("recorder/{buildId}")
     object SearchFromHome: Screens("searchFromHome/{title}")
+    object StepDetails: Screens("stepDetails/{buildId}/{step}/{uri}")
 }
