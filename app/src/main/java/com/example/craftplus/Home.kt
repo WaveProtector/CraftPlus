@@ -71,10 +71,11 @@ fun Home(navController: NavController, modifier: Modifier = Modifier) {
 
     Column (modifier = Modifier
         .fillMaxWidth()
-        .padding(50.dp),
+        .padding(30.dp),
         horizontalAlignment = Alignment.CenterHorizontally)
     {
         Text("Welcome back, ${username.value}!", fontSize = 28.sp)
+        Spacer(modifier = Modifier.height(20.dp))
         Image(
             painter = painterResource(id = pfpSource),
             contentDescription = pfpSource.toString(),
@@ -87,6 +88,7 @@ fun Home(navController: NavController, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(110.dp))
 
         Text("Have a build in mind?", fontSize = 26.sp)
+
         BuildDropdown { selectedBuild ->
             //navController.navigate("search")
             navController.navigate(Screens.SearchFromHome.route.replace("{title}", selectedBuild))
