@@ -132,12 +132,12 @@ fun StepDetailsScreen(navController: NavController, buildTitle: String, step: In
         stepObj?.blocks?.forEach { block ->
             BlockItem(block = block)
         }
-        stepObj?.blocks?.forEach { block ->
-            BlockItem(block = block)
-        }
-        stepObj?.blocks?.forEach { block ->
-            BlockItem(block = block)
-        }
+//        stepObj?.blocks?.forEach { block ->
+//            BlockItem(block = block)
+//        }
+//        stepObj?.blocks?.forEach { block ->
+//            BlockItem(block = block)
+//        }
 
 
     }
@@ -163,8 +163,31 @@ fun BlockItem(block: BlockObject) {
             Row {
 
                 val blockImageMap = mapOf(
-                    "wood" to R.drawable.emerald,
-                    "stone" to R.drawable.steve_pfp
+                    "stone" to R.drawable.stone,
+                    "dirt" to R.drawable.dirt,
+                    "grass_block" to R.drawable.grass_block,
+                    "cobblestone" to R.drawable.cobblestone,
+                    "sand" to R.drawable.sand,
+                    "gravel" to R.drawable.gravel,
+                    "oak_log" to R.drawable.oak_log,
+                    "spruce_log" to R.drawable.spruce_log,
+                    "birch_log" to R.drawable.birch_log,
+                    "jungle_log" to R.drawable.jungle_log,
+                    "acacia_log" to R.drawable.acacia_log,
+                    "dark_oak_log" to R.drawable.dark_oak_log,
+                    "oak_planks" to R.drawable.oak_planks,
+                    "spruce_planks" to R.drawable.spruce_planks,
+                    "birch_planks" to R.drawable.birch_planks,
+                    "jungle_planks" to R.drawable.jungle_planks,
+                    "acacia_planks" to R.drawable.acacia_planks,
+                    "dark_oak_planks" to R.drawable.dark_oak_planks,
+                    "coal_ore" to R.drawable.coal_ore,
+                    "iron_ore" to R.drawable.iron_ore,
+                    "gold_ore" to R.drawable.gold_ore,
+                    "diamond_ore" to R.drawable.diamond_ore,
+                    "redstone_ore" to R.drawable.redstone_ore,
+                    "lapis_lazuli_ore" to R.drawable.lapis_lazuli,
+                    "emerald_ore" to R.drawable.emerald_ore
                 )
 
                 val imageResource = blockImageMap[block.type] ?: R.drawable.steve_pfp
