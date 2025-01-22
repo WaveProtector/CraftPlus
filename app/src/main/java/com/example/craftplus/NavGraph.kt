@@ -143,8 +143,7 @@ fun NavGraph (navController: NavHostController) {
             }
         }
         composable(route = Screens.Settings.route) {
-            // TODO
-            StatusToggleButton(auth.currentUser?.uid.toString())
+            StatusToggleButton(navController, auth.currentUser?.uid.toString(), buildViewModel = viewModel { BuildViewModel(RepositoryProvider.firestoreRepository) })
            //VideoScreen()
 
         }

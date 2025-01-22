@@ -111,6 +111,27 @@ class FirestoreRepository(private val firestore: FirebaseFirestore) {
             emptyList()
         }
     }
+
+    suspend fun getUserStatus(id: String): String? {
+        val db = FirebaseFirestore.getInstance()
+        return try {
+            val documentSnapshot = db.collection("Users").document(id).get().await()
+            //Log.d("getStatus", documentSnapshot.toString())
+            if (documentSnapshot.exists()) {
+                Log.d("getStatusDentro", documentSnapshot.getString("status").toString())
+                return documentSnapshot.getString("status")
+
+            } else {
+                Log.e("getUserStatus", "Document with id $id does not exist.")
+                "unknown"
+            }
+        } catch (e: Exception) {
+            Log.e("getUserStatus", "Error fetching user status", e)
+            "unknown"
+        }
+    }
+
+
 }
 
 // Singleton Instance

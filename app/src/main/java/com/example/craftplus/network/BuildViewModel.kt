@@ -7,7 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.craftplus.FirestoreRepository
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.io.IOException
 
 sealed interface BuildUiState {
@@ -141,5 +143,16 @@ class BuildViewModel(
                 buildUiState = BuildUiState.Error
             }
         }
+    }
+
+    fun getUserStatus(id: String): String {
+        var status = "unknown"
+        viewModelScope.launch {
+            try {
+                status = repository.getUserStatus(id).toString()
+            } catch (_: Exception) {
+            }
+        }
+        return status
     }
 }
