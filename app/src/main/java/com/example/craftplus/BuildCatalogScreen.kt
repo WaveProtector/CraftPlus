@@ -28,7 +28,7 @@ fun BuildCatalogScreen(navController: NavController) {
 
     LaunchedEffect(Unit) {
         db.collection("builds")
-            .whereEqualTo("completed", true)
+            .whereEqualTo("status", "completed")
             .get()
             .addOnSuccessListener { documents ->
                 builds = documents.map { it.data }
