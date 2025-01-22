@@ -69,7 +69,7 @@ fun MediaListItem(
             .padding(4.dp),
         shape = RectangleShape,
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xbf182e6f) // Cor azul com opacidade
+            containerColor = Color(0x990787a2)
         )
     ) {
         Row(
@@ -117,7 +117,7 @@ fun MediaListItem(
                     )
                 )
                 Text(
-                    text = "Block: ${step?.blocks?.sumOf { it.quantity } ?: 0}",
+                    text = "Blocks: ${step?.blocks?.sumOf { it.quantity } ?: 0}",
                     color = Color.White,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Bold,

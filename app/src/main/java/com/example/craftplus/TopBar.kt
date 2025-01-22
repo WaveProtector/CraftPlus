@@ -24,7 +24,7 @@ fun TopBar(navController: NavController, title: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(5.dp)
     ) {
         IconButton(
             onClick = { navController.popBackStack() },

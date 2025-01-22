@@ -19,6 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.craftplus.TopBar
 import com.example.craftplus.network.BuildObject
@@ -56,39 +58,54 @@ fun MediaListScreen(
     Scaffold(
         modifier = modifier.fillMaxSize()
     ) { innerPadding ->
-        TopBar(navController, if (build?.title != null) build.title else "Castelo")
-
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
         ) {
+            TopBar(navController, if (build?.title != null) build.title else "Castelo")
 
-            items(steps ?: emptyList()) { step ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
+                        end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
+                        bottom = innerPadding.calculateBottomPadding())
+            ) {
 
-                var file by remember { mutableStateOf<MediaFile?>(null) }
-                var isVideoDownloaded by remember { mutableStateOf(false) }
+                items(steps ?: emptyList()) { step ->
 
-                // Baixa o vídeo se não estiver baixado
-                if (!isVideoDownloaded) {
-                    downloadAndSaveVideo(step.video, context = LocalContext.current) { downloadedUri, downloadedByteArray ->
-                        //setUri(downloadedUri)
-                        //alo.byteArray = downloadedByteArray
-                        //Log.d("Loop", "$downloadedUri")
-                        file = createMediaFileFromBuild(build, step.video, downloadedUri, downloadedByteArray)
-                        isVideoDownloaded = true
+                    var file by remember { mutableStateOf<MediaFile?>(null) }
+                    var isVideoDownloaded by remember { mutableStateOf(false) }
+
+                    // Baixa o vídeo se não estiver baixado
+                    if (!isVideoDownloaded) {
+                        downloadAndSaveVideo(
+                            step.video,
+                            context = LocalContext.current
+                        ) { downloadedUri, downloadedByteArray ->
+                            //setUri(downloadedUri)
+                            //alo.byteArray = downloadedByteArray
+                            //Log.d("Loop", "$downloadedUri")
+                            file = createMediaFileFromBuild(
+                                build,
+                                step.video,
+                                downloadedUri,
+                                downloadedByteArray
+                            )
+                            isVideoDownloaded = true
+                        }
                     }
-                }
 
-                file?.let { mediaFile ->
-                    MediaListItem(
-                        file = mediaFile,
-                        navController = navController,
-                        modifier = Modifier.fillMaxWidth(),
-                        step = step
-                    )
-                }
+                    file?.let { mediaFile ->
+                        MediaListItem(
+                            file = mediaFile,
+                            navController = navController,
+                            modifier = Modifier.fillMaxWidth(),
+                            step = step
+                        )
+                    }
 
+                }
             }
         }
     }
