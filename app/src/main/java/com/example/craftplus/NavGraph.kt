@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.craftplus.Media.MediaListScreen
+import com.example.craftplus.Media.StepDetailsScreen
 import com.example.craftplus.network.BuildViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -144,7 +145,7 @@ fun NavGraph (navController: NavHostController) {
         }
         composable(route = Screens.Settings.route) {
             StatusToggleButton(navController, auth.currentUser?.uid.toString(), buildViewModel = viewModel { BuildViewModel(RepositoryProvider.firestoreRepository) })
-           //VideoScreen()
+            //VideoScreen()
 
         }
         composable(route = Screens.Search.route) {
@@ -157,48 +158,40 @@ fun NavGraph (navController: NavHostController) {
                 buildViewModel = viewModel { BuildViewModel(RepositoryProvider.firestoreRepository) }
             )
         }
+
+        composable(
+            route = Screens.StepDetails.route,
+            arguments = listOf(
+                navArgument("buildId") { type = NavType.StringType },
+                navArgument("step") { type = NavType.IntType },
+                navArgument("uri") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            // Obtenha os argumentos da navegação
+            val buildId = backStackEntry.arguments?.getString("buildId")
+            val step = backStackEntry.arguments?.getInt("step")
+            val uri = backStackEntry.arguments?.getString("uri")
+
+            Log.d("StepDetails", "Build ID: $buildId, Step Number: $step, Uri: $uri")
+
+            // Verifique se os argumentos não são nulos
+            if (buildId.isNullOrEmpty() || step == null || uri.isNullOrEmpty()) {
+                Log.d("StepDetails", "Invalid arguments: buildId or step or uri is null/empty")
+            } else {
+                Log.d("StepDetails", "Build ID: $buildId, Step Number: $step, Uri: $uri")
+
+
+                // Exiba a tela com os dados fornecidos
+                StepDetailsScreen(
+                    navController = navController,
+                    buildId = buildId,
+                    step = step,
+                    uri = uri,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center)
+                )
+            }
+        }
     }
 }
-////TODO TIRAR DAQUI
-//@Composable
-//fun VideoScreen() {
-//    val videoUri = Uri.parse("/storage/emulated/0/Movies/Craft+_Builds_Videos/file_supabase13.mp4")
-//    VideoPlayer(videoUri = videoUri, modifier = Modifier.fillMaxSize())
-//}
-//
-//@Composable
-//fun VideoPlayer(
-//    videoUri: Uri,
-//    modifier: Modifier = Modifier
-//) {
-//    val context = LocalContext.current
-//
-//    // Initialize ExoPlayer
-//    val exoPlayer = remember {
-//        ExoPlayer.Builder(context).build().apply {
-//            setMediaItem(MediaItem.fromUri(videoUri))
-//            prepare()
-//        }
-//    }
-//
-//    // Dispose of the ExoPlayer when the composable is removed
-//    AndroidView(
-//        modifier = modifier,
-//        factory = {
-//            PlayerView(context).apply {
-//                player = exoPlayer
-//                layoutParams = FrameLayout.LayoutParams(
-//                    ViewGroup.LayoutParams.MATCH_PARENT,
-//                    ViewGroup.LayoutParams.MATCH_PARENT
-//                )
-//            }
-//        }
-//    )
-//    DisposableEffect(
-//        Unit
-//    ) {
-//        onDispose {
-//            exoPlayer.release()
-//        }
-//    }
-//}
