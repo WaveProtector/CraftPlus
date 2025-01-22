@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -62,10 +63,11 @@ fun StepDetailsScreen(navController: NavController, buildTitle: String, step: In
     val videoUri = Uri.parse(decodedUri)
     val context = LocalContext.current
     val scrollState = rememberScrollState()
-
+    var nextStepObj: StepObject? = null
+    var uriNextStep: String = ""
 
     val builds: List<BuildObject>? = buildViewModel.getBuildObjects();
-    Log.d("viewwwwwww", builds.toString())
+    //Log.d("viewwwwwww", builds.toString())
     var build: BuildObject? = builds?.find { it.title.equals(buildTitle, ignoreCase = true) }
 
     //Caso seja clicado na lupa, faz random
@@ -75,14 +77,24 @@ fun StepDetailsScreen(navController: NavController, buildTitle: String, step: In
 
     val steps: List<StepObject>? = build?.steps;
 
-    Log.d("steps", steps.toString())
+    //Log.d("steps", steps.toString())
 
     val stepObj = steps?.get(step - 1)
-    //val nextStepObj = steps?.get(step)
-    //val alo = nextStepObj.
 
-//    Log.d("stepObj", "${stepObj}")
-//    Log.d("nextStepObj", "${nextStepObj}")
+    if (steps != null && steps.size > step) {
+        nextStepObj = steps[step]
+
+        downloadAndSaveVideo(
+            fileName = nextStepObj.video,
+            context = LocalContext.current
+        ) { uriDonwloaded, byteArray ->
+            // URI da próxima etapa
+           uriNextStep = Uri.encode(uriDonwloaded.toString())
+
+        }
+    }
+
+    //Log.d("stepObj", "${stepObj}")
 
     // Initialize ExoPlayer
     val exoPlayer = remember {
@@ -98,20 +110,29 @@ fun StepDetailsScreen(navController: NavController, buildTitle: String, step: In
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        TopBar(navController, "Step: " + step.toString())
 
-//        if (nextStepObj != null) {
-//            Button(onClick = {
-//                val stepNumber = (step + 1).toString()
-//                val route = Screens.StepDetails.route
-//                    .replace("{buildTitle}", buildTitle)
-//                    .replace("{step}", stepNumber)
-//                    .replace("{uri}", encodedUri.toString())
-//                navController.navigate(route)
-//            }) {
-//                Text(text = "Next")//MAISS
-//            }
-//        }
+        Box(modifier = Modifier.fillMaxSize()) {
+
+            TopBar(navController, "Step: " + step.toString())
+
+            if (nextStepObj != null) {
+                Button(
+                    onClick = {
+                        val stepNumber = (step + 1).toString()
+                        val route = Screens.StepDetails.route
+                            .replace("{buildTitle}", buildTitle)
+                            .replace("{step}", stepNumber)
+                            .replace("{uri}", uriNextStep)
+                        navController.navigate(route)
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd) // Alinha o botão no topo direito
+                        .padding(16.dp) // Adiciona um padding para afastar do topo e da direita
+                ) {
+                    Text(text = "Next")//MAISS
+                }
+            }
+        }
 
         // Dispose of the ExoPlayer when the composable is removed
         AndroidView(

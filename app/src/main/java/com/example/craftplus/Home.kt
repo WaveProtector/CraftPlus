@@ -90,14 +90,12 @@ fun Home(navController: NavController, modifier: Modifier = Modifier) {
         BuildDropdown { selectedBuild ->
             //navController.navigate("search")
             navController.navigate(Screens.SearchFromHome.route.replace("{title}", selectedBuild))
-            Log.d("SelectedBuild", "Usuário selecionou: $selectedBuild")
-            // Aqui você pode navegar para outra tela ou carregar detalhes da build
+            //Log.d("SelectedBuild", "Usuário selecionou: $selectedBuild")
         }
 
         Spacer(modifier = Modifier.height(50.dp))
 
         Text("Builds in progress", fontSize = 26.sp)
-        // TODO -> Não é muito importante implementar esta parte tho, isto é mais um "tracker de builds"
 
         Spacer(modifier = Modifier.height(60.dp))
 

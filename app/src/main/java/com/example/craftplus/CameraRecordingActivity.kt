@@ -194,7 +194,7 @@ class CameraRecordingActivity : ComponentActivity() {
                         //isVideoTaken = true
                         //isRecording = false
                         lastVideoUri.value = recordEvent.outputResults.outputUri
-                        Log.d("VideoRecordEvent.Finalize", "Gravação finalizada: ${lastVideoUri.value}")
+                        //Log.d("VideoRecordEvent.Finalize", "Gravação finalizada: ${lastVideoUri.value}")
                         Toast.makeText(this, "Recording stopped! Saved on: ${lastVideoUri.value}", Toast.LENGTH_SHORT).show()
                     }
                 }

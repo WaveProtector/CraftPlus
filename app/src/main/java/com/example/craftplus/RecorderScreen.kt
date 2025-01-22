@@ -138,7 +138,7 @@ fun RecorderScreen(
             currentStepNumber++
             Log.d("Recorder", "Step Number incremented: $currentStepNumber")
             isProcessingRecording = false
-            Log.d("RecorderScreen", "Video URI: $videoUri")
+            //Log.d("RecorderScreen", "Video URI: $videoUri")
         }
     }
     Column(

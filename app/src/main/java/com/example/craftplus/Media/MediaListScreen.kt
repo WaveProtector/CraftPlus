@@ -145,7 +145,7 @@ fun downloadAndSaveVideo(
                     return@use
                 }
 
-                val name = "file_supabase" + Random.nextInt(200, 301)
+                val name = "file_supabase" + Random.nextInt(1, 6129)
                 val contentValues = ContentValues().apply {
                     put(MediaStore.Video.Media.DISPLAY_NAME, "$name.mp4")
                     put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
