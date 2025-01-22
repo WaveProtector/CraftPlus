@@ -49,6 +49,33 @@ import kotlinx.coroutines.tasks.await
 import java.io.InputStream
 import kotlin.random.Random
 
+val commonBlocks = listOf(
+    "Stone",
+    "Dirt",
+    "Grass Block",
+    "Cobblestone",
+    "Sand",
+    "Gravel",
+    "Oak Log",
+    "Spruce Log",
+    "Birch Log",
+    "Jungle Log",
+    "Acacia Log",
+    "Dark Oak Log",
+    "Oak Planks",
+    "Spruce Planks",
+    "Birch Planks",
+    "Jungle Planks",
+    "Acacia Planks",
+    "Dark Oak Planks",
+    "Coal Ore",
+    "Iron Ore",
+    "Gold Ore",
+    "Diamond Ore",
+    "Redstone Ore",
+    "Lapis Lazuli Ore",
+    "Emerald Ore"
+)
 
 @Composable
 fun RecorderScreen(
@@ -206,13 +233,15 @@ fun updateSteps(buildId: String, currentStepNumber: Int, videoUri: Uri) {
     // Reference to the document you want to update
     val documentRef = db.collection("Builds").document(buildId)
     // Create a new StepObject to add
+    var numberOfBlocks = Random.nextInt(1, 11)
+    var listOfBlocks = mutableListOf<HashMap<String, Any>>()
+    repeat(numberOfBlocks){
+        listOfBlocks.add(hashMapOf("type" to commonBlocks[Random.nextInt(0, commonBlocks.size)], "quantity" to Random.nextInt(10, 70)))
+    }
     val newStep = hashMapOf(
         "numStep" to currentStepNumber,
         "video" to videoUri,
-        "blocks" to listOf(
-            hashMapOf("type" to "wood", "quantity" to Random.nextInt(10,251)),
-            hashMapOf("type" to "stone", "quantity" to Random.nextInt(50,121))
-        )
+        "blocks" to listOfBlocks
     )
 
     // Update the 'steps' array field by adding the new StepObject
