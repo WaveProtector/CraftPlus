@@ -95,10 +95,6 @@ fun Home(navController: NavController, modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(50.dp))
 
-        Text("Builds in progress", fontSize = 26.sp)
-
-        Spacer(modifier = Modifier.height(60.dp))
-
         // Logout button
         Button(onClick = { logout(navController) }) {
             Text(text = "Logout")
