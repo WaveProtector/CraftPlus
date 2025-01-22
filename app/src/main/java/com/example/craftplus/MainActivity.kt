@@ -58,8 +58,8 @@ class MainActivity : ComponentActivity() {
 
                 // Screens that don't show the bottom navigation
                 val hideBottomNavigationScreens = listOf(
-                    "login",
-                    "register",
+                    Screens.Login.route,
+                    Screens.Register.route,
                     Screens.WaitForResponse.route,
                     Screens.ChooseRoles.route,
                     Screens.Builder.route,
