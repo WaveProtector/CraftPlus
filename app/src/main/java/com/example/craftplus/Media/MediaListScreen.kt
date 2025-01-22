@@ -11,6 +11,8 @@ import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,6 +55,7 @@ fun MediaListScreen(
     }
 
     val steps: List<StepObject>? = build?.steps;
+    Log.d("size of steps", build?.steps?.size.toString())
 
 
     Scaffold(
@@ -63,16 +66,18 @@ fun MediaListScreen(
                 .fillMaxSize()
         ) {
             TopBar(navController, if (build?.title != null) build.title else "Castelo")
-
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
+                    .padding(
+                        start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
                         end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-                        bottom = innerPadding.calculateBottomPadding())
+                        bottom = innerPadding.calculateBottomPadding()
+                    )
+                    .verticalScroll(rememberScrollState()) // Habilita o scroll na coluna
             ) {
-
-                items(steps ?: emptyList()) { step ->
+                // Iterando sobre a lista de steps da mesma forma que na LazyColumn
+                steps?.forEach { step ->
 
                     var file by remember { mutableStateOf<MediaFile?>(null) }
                     var isVideoDownloaded by remember { mutableStateOf(false) }
@@ -83,9 +88,6 @@ fun MediaListScreen(
                             step.video,
                             context = LocalContext.current
                         ) { downloadedUri, downloadedByteArray ->
-                            //setUri(downloadedUri)
-                            //alo.byteArray = downloadedByteArray
-                            //Log.d("Loop", "$downloadedUri")
                             file = createMediaFileFromBuild(
                                 build,
                                 step.video,

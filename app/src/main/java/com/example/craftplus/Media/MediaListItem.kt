@@ -136,18 +136,6 @@ fun MediaListItem(
                             fontSize = 18.sp // Tamanho maior da fonte para a duração
                         )
                     )
-//                    val encodedUri = Uri.encode(file.uri.toString())
-//
-//                    Button(onClick = {
-//                        val stepNumber = step?.numStep?.toString() ?: "1"
-//                        val route = Screens.StepDetails.route
-//                            .replace("{buildTitle}", buildTitle)
-//                            .replace("{step}", stepNumber)
-//                            .replace("{uri}", encodedUri.toString())
-//                        navController.navigate(route)
-//                    }) {
-//                        Text(text = "Details")
-//                    }
                 }
 
             }
